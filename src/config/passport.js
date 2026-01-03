@@ -18,12 +18,12 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
         const avatarUrl = photos[0].value;
 
         try {
-          // Check if user exists by email
+          
           let userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
           let user;
 
           if (userResult.rows.length === 0) {
-            // Create new user if not exists
+            
             const newUser = await db.query(
               'INSERT INTO users (full_name, email, avatar_url, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING *',
               [displayName, email, avatarUrl]
@@ -33,7 +33,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
             user = userResult.rows[0];
           }
 
-          // Check if OAuth account linked
+          
           const oauthResult = await db.query(
             'SELECT * FROM oauth_accounts WHERE provider = $1 AND provider_user_id = $2',
             ['google', id]
@@ -55,7 +55,7 @@ if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   );
 }
 
-// We don't use sessions, but passport requires these if we use passport.initialize()
+// Kita gak pake sessions, tapi passport tetep minta ini pas pake passport.initialize()
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => done(null, { id }));
 

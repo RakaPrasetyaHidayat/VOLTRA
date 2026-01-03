@@ -5,6 +5,10 @@ require('dotenv').config();
 
 const authRoutes = require('./src/routes/authRoutes');
 const testRoutes = require('./src/routes/testRoutes');
+const serverRoutes = require('./src/routes/serverRoutes');
+const channelRoutes = require('./src/routes/channelRoutes');
+const subChannelRoutes = require('./src/routes/subChannelRoutes');
+const taskRoutes = require('./src/routes/taskRoutes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocs = require('./src/config/swagger');
 
@@ -22,6 +26,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/test', testRoutes);
+app.use('/api/servers', serverRoutes);
+app.use('/api/channels', channelRoutes);
+app.use('/api/sub-channels', subChannelRoutes);
+app.use('/api/tasks', taskRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

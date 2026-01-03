@@ -1,14 +1,18 @@
 const jwt = require('jsonwebtoken');
+const ErrorHandler = require('../utils/errorHandler');
 
+/**
+ * Middleware buat nge-protect route pake JWT
+ */
 const protect = (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.headers.authorization?.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
 
   if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token' });
+    return next(new ErrorHandler('Not authorized, no token', 401));
   }
 
   try {
@@ -16,7 +20,7 @@ const protect = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Not authorized, token failed' });
+    return next(new ErrorHandler('Not authorized, token failed', 401));
   }
 };
 
