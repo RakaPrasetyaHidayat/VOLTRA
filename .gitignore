@@ -2,3 +2,6 @@
 vercel.json
 node_modules/
 dist
+ApiDocumentation.md
+.zenflow/
+.zencoder/
