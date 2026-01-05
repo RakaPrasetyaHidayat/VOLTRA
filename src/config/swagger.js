@@ -1,4 +1,5 @@
 const swaggerJsDoc = require('swagger-jsdoc');
+const path = require('path');
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -10,13 +11,13 @@ const swaggerOptions = {
       contact: {
         name: 'Developer',
       },
-      servers: [
-        {
-          url: 'http://localhost:3000',
-          description: 'Development server',
-        },
-      ],
     },
+    servers: [
+      {
+        url: '/',
+        description: 'Current server',
+      },
+    ],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -27,7 +28,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ['./src/routes/*.js'], 
+  apis: [path.join(__dirname, '../routes/*.js')], 
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);

@@ -5,3 +5,4 @@ dist
 ApiDocumentation.md
 .zenflow/
 .zencoder/
+.vercel

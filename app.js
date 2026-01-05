@@ -2,6 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const passport = require('./src/config/passport');
 require('dotenv').config();
+require('reflect-metadata');
+const { AppDataSource } = require('./src/config/typeorm');
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log('TypeORM Data Source initialized');
+  })
+  .catch((err) => {
+    console.error('TypeORM initialization error', err);
+  });
 
 const authRoutes = require('./src/routes/authRoutes');
 const testRoutes = require('./src/routes/testRoutes');
@@ -21,9 +31,32 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, { customCssUrl: CSS_URL }));
 
 // Routes
+const apiInfo = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to VOLTRA Backend API',
+    version: '1.0.0',
+    status: 'Operational',
+    endpoints: {
+      auth: '/api/auth',
+      test: '/api/test',
+      servers: '/api/servers',
+      channels: '/api/channels',
+      subChannels: '/api/sub-channels',
+      tasks: '/api/tasks',
+      docs: '/api-docs',
+      health: '/health'
+    }
+  });
+};
+
+app.get('/', apiInfo);
+app.get('/api', apiInfo);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/servers', serverRoutes);
