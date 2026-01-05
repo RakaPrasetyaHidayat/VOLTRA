@@ -34,6 +34,13 @@ const router = express.Router();
  *         description: Connection failed
  */
 router.get('/test-db', async (req, res) => {
+  if (!process.env.DATABASE_URL) {
+    return res.status(503).json({
+      status: 'error',
+      message: 'Database not configured on this environment. Set DATABASE_URL to test DB connection.'
+    });
+  }
+
   try {
     const result = await db.query('SELECT NOW() as current_time, current_database() as database');
     res.status(200).json({

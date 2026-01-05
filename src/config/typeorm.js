@@ -13,4 +13,15 @@ const AppDataSource = new DataSource({
   },
 });
 
-module.exports = { AppDataSource };
+async function ensureInitialized() {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+  }
+}
+
+async function getRepository(entityName) {
+  await ensureInitialized();
+  return AppDataSource.getRepository(entityName);
+}
+
+module.exports = { AppDataSource, ensureInitialized, getRepository };

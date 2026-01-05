@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const passport = require('./src/config/passport');
 require('dotenv').config();
 require('reflect-metadata');
@@ -29,12 +30,71 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
+app.use(compression());
 
 // Swagger Documentation
-const CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css";
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, { customCssUrl: CSS_URL }));
+// Serve the swagger JSON and a CDN-backed Swagger UI HTML page.
+app.get('/api-docs/swagger.json', (req, res) => res.json(swaggerDocs));
+
+app.get('/api-docs', (req, res) => {
+  const cssUrl = 'https://unpkg.com/swagger-ui-dist/swagger-ui.css';
+  const bundleUrl = 'https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js';
+  const presetUrl = 'https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js';
+
+  const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>API Docs</title>
+    <link rel="stylesheet" href="${cssUrl}" />
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="${bundleUrl}"></script>
+    <script src="${presetUrl}"></script>
+    <script>
+      window.onload = function() {
+        const ui = SwaggerUIBundle({
+          url: '/api-docs/swagger.json',
+          dom_id: '#swagger-ui',
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIStandalonePreset
+          ],
+          layout: 'StandaloneLayout'
+        });
+        window.ui = ui;
+      };
+    </script>
+  </body>
+  </html>`;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.status(200).send(html);
+});
 
 // Routes
+/**
+ * @swagger
+ * /:
+ *   get:
+ *     summary: API info
+ *     tags: [Test]
+ *     responses:
+ *       200:
+ *         description: API info
+ */
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     tags: [Test]
+ *     responses:
+ *       200:
+ *         description: ok
+ */
 const apiInfo = (req, res) => {
   res.status(200).json({
     success: true,
