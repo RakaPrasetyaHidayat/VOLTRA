@@ -5,6 +5,7 @@ const { protect } = require('../middleware/authMiddleware');
 
 
 router.post('/', protect, subChannelController.create);
+
 router.get('/channel/:channelId', protect, subChannelController.getByChannel);
 
 module.exports = router;

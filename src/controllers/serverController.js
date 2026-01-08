@@ -9,8 +9,18 @@ exports.create = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
 
   if (!name) return next(new ErrorHandler('Server name is required', 400));
+  // Generate a unique 6-digit numeric invite token (e.g. 123456)
+  let inviteToken;
+  let tries = 0;
+  do {
+    if (tries++ > 10) return next(new ErrorHandler('Failed to generate unique invite token', 500));
+    const n = crypto.randomInt(0, 1000000);
+    inviteToken = String(n).padStart(6, '0');
+    // check uniqueness
+    const exists = await db.query('SELECT id FROM servers WHERE invite_token = $1', [inviteToken]);
+    if (exists.rows.length === 0) break;
+  } while (true);
 
-  const inviteToken = crypto.randomBytes(4).toString('hex').toUpperCase();
   const result = await db.query(
     'INSERT INTO servers (name, owner_id, invite_token) VALUES ($1, $2, $3) RETURNING *',
     [name, userId, inviteToken]
@@ -23,7 +33,14 @@ exports.create = asyncHandler(async (req, res, next) => {
     [server.id, userId, 'admin']
   );
 
-  return response.success(res, 201, server);
+  // return server info including invite token so frontend can display it
+  return response.success(res, 201, {
+    id: server.id,
+    name: server.name,
+    ownerId: server.owner_id,
+    inviteToken: server.invite_token,
+    createdAt: server.created_at,
+  });
 });
 
 exports.join = asyncHandler(async (req, res, next) => {

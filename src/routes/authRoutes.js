@@ -7,9 +7,12 @@ const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/register', authController.register);
+
 router.post('/login', authController.login);
+
 router.get('/me', protect, authController.getMe);
-router.put('/profile', protect, authController.updateProfile);
+
+router.put('/profile', protect, authController.updateProfile);y
 
 router.get(
   '/google',

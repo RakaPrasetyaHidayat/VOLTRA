@@ -5,7 +5,9 @@ const { protect } = require('../middleware/authMiddleware');
 
 
 router.post('/', protect, create);
+
 router.get('/server/:serverId', protect, getByServer);
+
 router.get('/:id', protect, getDetail);
 
 module.exports = router;
