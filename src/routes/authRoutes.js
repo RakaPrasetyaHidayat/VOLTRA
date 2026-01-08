@@ -1,9 +1,15 @@
 const express = require('express');
 const passport = require('passport');
 const { generateToken } = require('../utils/jwtUtils');
+const authController = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.get('/me', protect, authController.getMe);
+router.put('/profile', protect, authController.updateProfile);
 
 router.get(
   '/google',
@@ -20,5 +26,8 @@ router.get(
     );
   }
 );
+
+// Accept ID token from client (mobile/SPAs)
+router.post('/google/token', authController.googleTokenAuth);
 
 module.exports = router;

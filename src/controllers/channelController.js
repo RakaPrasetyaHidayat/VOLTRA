@@ -2,6 +2,7 @@ const db = require('../config/db');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
+const redis = require('../config/redis');
 
 exports.create = asyncHandler(async (req, res, next) => {
   const { serverId, name, description, techStack, background, problemToSolve } = req.body;
@@ -25,9 +26,29 @@ exports.getByServer = asyncHandler(async (req, res, next) => {
 
 exports.getDetail = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+  const cacheKey = `channel:${id}`;
+
+  try {
+    const cached = await redis.get(cacheKey);
+    if (cached) {
+      return response.success(res, 200, JSON.parse(cached));
+    }
+  } catch (err) {
+    console.warn('Redis get failed', err);
+  }
+
   const result = await db.query('SELECT * FROM channels WHERE id = $1', [id]);
   if (result.rows.length === 0) {
     return next(new ErrorHandler('Channel not found', 404));
   }
-  return response.success(res, 200, result.rows[0]);
+
+  const channel = result.rows[0];
+
+  try {
+    await redis.setex(cacheKey, 300, JSON.stringify(channel));
+  } catch (err) {
+    console.warn('Redis set failed', err);
+  }
+
+  return response.success(res, 200, channel);
 });

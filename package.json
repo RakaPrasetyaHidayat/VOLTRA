@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon app.js",
-    "test-db": "node test-db.js"
+    "test-db": "node test-db.js",
+    "test-auth": "node scripts/test-auth.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

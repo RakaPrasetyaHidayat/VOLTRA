@@ -20,6 +20,7 @@ const serverRoutes = require('./src/routes/serverRoutes');
 const channelRoutes = require('./src/routes/channelRoutes');
 const subChannelRoutes = require('./src/routes/subChannelRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
+const errorMiddleware = require('./src/middleware/errorMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocs = require('./src/config/swagger');
 
@@ -130,10 +131,7 @@ app.get('/health', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
-});
+app.use(errorMiddleware);
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
