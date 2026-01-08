@@ -11,9 +11,11 @@ exports.create = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Channel ID and name are required', 400));
   }
 
+  const userId = req.user.id;
   const result = await db.query(
     'INSERT INTO sub_channels (channel_id, name) VALUES ($1, $2) RETURNING *',
-    [channelId, name]
+    [channelId, name],
+    userId
   );
   const saved = result.rows[0];
 
@@ -28,6 +30,7 @@ exports.create = asyncHandler(async (req, res, next) => {
 
 exports.getByChannel = asyncHandler(async (req, res, next) => {
   const { channelId } = req.params;
+  const userId = req.user.id;
   const cacheKey = `subchannels:${channelId}`;
   try {
     const cached = await redis.get(cacheKey);
@@ -45,7 +48,7 @@ exports.getByChannel = asyncHandler(async (req, res, next) => {
     LEFT JOIN tasks t ON sc.id = t.sub_channel_id
     WHERE sc.channel_id = $1
     GROUP BY sc.id
-  `, [channelId]);
+  `, [channelId], userId);
 
   const items = result.rows.map(row => ({
     ...row,

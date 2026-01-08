@@ -11,21 +11,25 @@ exports.create = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Server ID and name are required', 400));
   }
 
+  const userId = req.user.id;
   const result = await db.query(
     'INSERT INTO channels (server_id, name, description, tech_stack, background, problem_to_solve) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-    [serverId, name, description, techStack, background, problemToSolve]
+    [serverId, name, description, techStack, background, problemToSolve],
+    userId
   );
   return response.success(res, 201, result.rows[0]);
 });
 
 exports.getByServer = asyncHandler(async (req, res, next) => {
   const { serverId } = req.params;
-  const result = await db.query('SELECT * FROM channels WHERE server_id = $1', [serverId]);
+  const userId = req.user.id;
+  const result = await db.query('SELECT * FROM channels WHERE server_id = $1', [serverId], userId);
   return response.success(res, 200, result.rows);
 });
 
 exports.getDetail = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
   const cacheKey = `channel:${id}`;
 
   try {
@@ -37,7 +41,7 @@ exports.getDetail = asyncHandler(async (req, res, next) => {
     console.warn('Redis get failed', err);
   }
 
-  const result = await db.query('SELECT * FROM channels WHERE id = $1', [id]);
+  const result = await db.query('SELECT * FROM channels WHERE id = $1', [id], userId);
   if (result.rows.length === 0) {
     return next(new ErrorHandler('Channel not found', 404));
   }

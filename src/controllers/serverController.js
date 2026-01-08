@@ -16,21 +16,23 @@ exports.create = asyncHandler(async (req, res, next) => {
     if (tries++ > 10) return next(new ErrorHandler('Failed to generate unique invite token', 500));
     const n = crypto.randomInt(0, 1000000);
     inviteToken = String(n).padStart(6, '0');
-    // check uniqueness
+    // check uniqueness (global check, bypass RLS)
     const exists = await db.query('SELECT id FROM servers WHERE invite_token = $1', [inviteToken]);
     if (exists.rows.length === 0) break;
   } while (true);
 
   const result = await db.query(
     'INSERT INTO servers (name, owner_id, invite_token) VALUES ($1, $2, $3) RETURNING *',
-    [name, userId, inviteToken]
+    [name, userId, inviteToken],
+    userId
   );
   
   const server = result.rows[0];
 
   await db.query(
     'INSERT INTO server_members (server_id, user_id, role) VALUES ($1, $2, $3)',
-    [server.id, userId, 'admin']
+    [server.id, userId, 'admin'],
+    userId
   );
 
   // return server info including invite token so frontend can display it
@@ -58,7 +60,8 @@ exports.join = asyncHandler(async (req, res, next) => {
 
   await db.query(
     'INSERT INTO server_members (server_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-    [serverId, userId]
+    [serverId, userId],
+    userId
   );
 
   return response.success(res, 200, { serverId }, 'Joined server successfully');
@@ -68,7 +71,8 @@ exports.getAll = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const result = await db.query(
     'SELECT s.* FROM servers s JOIN server_members sm ON s.id = sm.server_id WHERE sm.user_id = $1',
-    [userId]
+    [userId],
+    userId
   );
   return response.success(res, 200, result.rows);
 });

@@ -23,7 +23,25 @@ if (!process.env.DATABASE_URL) {
   });
 
   module.exports = {
-    query: (text, params) => pool.query(text, params),
+    query: async (text, params, userId) => {
+      const client = await pool.connect();
+      try {
+        if (userId) {
+          await client.query('BEGIN');
+          await client.query('SELECT set_config($1, $2, true)', ['app.current_user_id', String(userId)]);
+          const res = await client.query(text, params);
+          await client.query('COMMIT');
+          return res;
+        } else {
+          return await client.query(text, params);
+        }
+      } catch (e) {
+        if (userId) await client.query('ROLLBACK');
+        throw e;
+      } finally {
+        client.release();
+      }
+    },
     pool,
   };
 }
