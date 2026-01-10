@@ -23,15 +23,14 @@ CREATE TABLE IF NOT EXISTS oauth_accounts (
 );
 
 CREATE TABLE IF NOT EXISTS servers (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    invite_token VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS server_members (
-    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    server_id VARCHAR(255) REFERENCES servers(id) ON DELETE CASCADE,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     role VARCHAR(50) DEFAULT 'member',
     PRIMARY KEY (server_id, user_id)
@@ -39,7 +38,7 @@ CREATE TABLE IF NOT EXISTS server_members (
 
 CREATE TABLE IF NOT EXISTS channels (
     id SERIAL PRIMARY KEY,
-    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    server_id VARCHAR(255) REFERENCES servers(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     tech_stack TEXT,

@@ -17,13 +17,13 @@ exports.create = asyncHandler(async (req, res, next) => {
     const n = crypto.randomInt(0, 1000000);
     inviteToken = String(n).padStart(6, '0');
     // check uniqueness (global check, bypass RLS)
-    const exists = await db.query('SELECT id FROM servers WHERE invite_token = $1', [inviteToken]);
+    const exists = await db.query('SELECT id FROM servers WHERE id = $1', [inviteToken]);
     if (exists.rows.length === 0) break;
   } while (true);
 
   const result = await db.query(
-    'INSERT INTO servers (name, owner_id, invite_token) VALUES ($1, $2, $3) RETURNING *',
-    [name, userId, inviteToken],
+    'INSERT INTO servers (id, name, owner_id) VALUES ($1, $2, $3) RETURNING *',
+    [inviteToken, name, userId],
     userId
   );
   
@@ -40,7 +40,7 @@ exports.create = asyncHandler(async (req, res, next) => {
     id: server.id,
     name: server.name,
     ownerId: server.owner_id,
-    inviteToken: server.invite_token,
+    inviteToken: server.id,
     createdAt: server.created_at,
   });
 });
@@ -51,7 +51,7 @@ exports.join = asyncHandler(async (req, res, next) => {
 
   if (!inviteToken) return next(new ErrorHandler('Invite token is required', 400));
 
-  const serverResult = await db.query('SELECT id FROM servers WHERE invite_token = $1', [inviteToken]);
+  const serverResult = await db.query('SELECT id FROM servers WHERE id = $1', [inviteToken]);
   if (serverResult.rows.length === 0) {
     return next(new ErrorHandler('Server not found', 404));
   }

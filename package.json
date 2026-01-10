@@ -8,6 +8,7 @@
     "test-db": "node test-db.js",
     "test-auth": "node scripts/test-auth.js",
     "test-invite": "node scripts/test-invite.js"
+    ,"test-api": "node scripts/test-api.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

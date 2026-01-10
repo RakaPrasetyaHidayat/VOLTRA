@@ -19,6 +19,10 @@ exports.register = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Invalid email format', 400));
   }
 
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    return next(new ErrorHandler('Only Gmail addresses are allowed for registration', 400));
+  }
+
   // Check if user already exists
   const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
   if (existingUser.rows.length > 0) {
