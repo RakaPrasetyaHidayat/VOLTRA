@@ -3,6 +3,23 @@ const db = require('../config/db');
 const router = express.Router();
 
 
+/**
+ * @swagger
+ * tags:
+ *   name: Test
+ *   description: System and health checks
+ */
+
+/**
+ * @swagger
+ * /api/test/test-db:
+ *   get:
+ *     summary: Check database connection
+ *     tags: [Test]
+ *     responses:
+ *       200:
+ *         description: Connection successful
+ */
 router.get('/test-db', async (req, res) => {
   if (!process.env.DATABASE_URL) {
     return res.status(503).json({

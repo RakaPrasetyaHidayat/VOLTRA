@@ -6,20 +6,16 @@ const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
 
 exports.register = asyncHandler(async (req, res, next) => {
-  const { email, password, confirmPassword, username, fullName, jobTitle, division, bio, company } = req.body;
+  const { email, password, fullName } = req.body;
 
-  if (!email || !password || !username) {
-    return next(new ErrorHandler('Email, password, and username are required', 400));
-  }
-
-  if (typeof confirmPassword !== 'undefined' && password !== confirmPassword) {
-    return next(new ErrorHandler('Password and confirm password do not match', 400));
+  if (!email || !password || !fullName) {
+    return next(new ErrorHandler('Email, password, and full name are required', 400));
   }
 
   // Check if user already exists
-  const existingUser = await db.query('SELECT * FROM users WHERE email = $1 OR username = $2', [email, username]);
+  const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
   if (existingUser.rows.length > 0) {
-    return next(new ErrorHandler('User with this email or username already exists', 400));
+    return next(new ErrorHandler('User with this email already exists', 400));
   }
 
   // Hash password
@@ -28,23 +24,11 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   // Insert user
   const result = await db.query(
-    'INSERT INTO users (email, password, username, full_name, job_title, division, bio, company, is_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, TRUE) RETURNING id, email, username, full_name, job_title, division, bio, company',
-    [email, hashedPassword, username, fullName, jobTitle, division, bio, company]
+    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, created_at',
+    [email, hashedPassword, fullName]
   );
 
-  const userRow = result.rows[0];
-  const user = {
-    id: userRow.id,
-    email: userRow.email,
-    username: userRow.username,
-    fullName: userRow.full_name,
-    jobTitle: userRow.job_title,
-    division: userRow.division,
-    bio: userRow.bio,
-    company: userRow.company,
-    avatarUrl: userRow.avatar_url,
-  };
-
+  const user = result.rows[0];
   const token = generateToken(user.id);
 
   return response.success(res, 201, { user, token }, 'User registered successfully');
@@ -64,6 +48,10 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   const user = result.rows[0];
 
+  if (!user.password) {
+    return next(new ErrorHandler('Please use social login for this account', 401));
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return next(new ErrorHandler('Invalid credentials', 401));
@@ -74,13 +62,10 @@ exports.login = asyncHandler(async (req, res, next) => {
   const userResp = {
     id: user.id,
     email: user.email,
-    username: user.username,
     fullName: user.full_name,
-    jobTitle: user.job_title,
-    division: user.division,
-    bio: user.bio,
-    company: user.company,
     avatarUrl: user.avatar_url,
+    isVerified: user.is_verified,
+    createdAt: user.created_at
   };
 
   return response.success(res, 200, { user: userResp, token }, 'Login successful');
@@ -88,54 +73,30 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 exports.getMe = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const result = await db.query('SELECT id, email, username, full_name, job_title, division, bio, company, avatar_url FROM users WHERE id = $1', [userId]);
+  const result = await db.query('SELECT id, email, full_name, avatar_url, is_verified, created_at FROM users WHERE id = $1', [userId], userId);
   
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
   }
 
-  const row = result.rows[0];
-  const user = {
-    id: row.id,
-    email: row.email,
-    username: row.username,
-    fullName: row.full_name,
-    jobTitle: row.job_title,
-    division: row.division,
-    bio: row.bio,
-    company: row.company,
-    avatarUrl: row.avatar_url,
-  };
-
-  return response.success(res, 200, user);
+  return response.success(res, 200, result.rows[0]);
 });
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { fullName, jobTitle, division, bio, company, avatarUrl } = req.body;
+  const { fullName, avatarUrl } = req.body;
 
   const result = await db.query(
-    'UPDATE users SET full_name = $1, job_title = $2, division = $3, bio = $4, company = $5, avatar_url = $6 WHERE id = $7 RETURNING id, email, username, full_name, job_title, division, bio, company, avatar_url',
-    [fullName, jobTitle, division, bio, company, avatarUrl, userId]
+    'UPDATE users SET full_name = $1, avatar_url = $2 WHERE id = $3 RETURNING id, email, full_name, avatar_url, is_verified, created_at',
+    [fullName, avatarUrl, userId],
+    userId
   );
 
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
   }
-  const row = result.rows[0];
-  const user = {
-    id: row.id,
-    email: row.email,
-    username: row.username,
-    fullName: row.full_name,
-    jobTitle: row.job_title,
-    division: row.division,
-    bio: row.bio,
-    company: row.company,
-    avatarUrl: row.avatar_url,
-  };
 
-  return response.success(res, 200, user, 'Profile updated successfully');
+  return response.success(res, 200, result.rows[0], 'Profile updated successfully');
 });
 
 // Google ID token sign-in (for mobile/SPAs that send id_token directly)
@@ -186,13 +147,10 @@ exports.googleTokenAuth = asyncHandler(async (req, res, next) => {
   const userResp = {
     id: user.id,
     email: user.email,
-    username: user.username,
     fullName: user.full_name,
-    jobTitle: user.job_title,
-    division: user.division,
-    bio: user.bio,
-    company: user.company,
     avatarUrl: user.avatar_url,
+    isVerified: user.is_verified,
+    createdAt: user.created_at
   };
 
   return response.success(res, 200, { user: userResp, token }, 'Google sign-in successful');
