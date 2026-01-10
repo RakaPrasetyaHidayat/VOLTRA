@@ -1,15 +1,22 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const { generateToken } = require('../utils/jwtUtils');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
+const mailService = require('../services/mailService');
+const validator = require('validator');
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { email, password, fullName } = req.body;
 
   if (!email || !password || !fullName) {
     return next(new ErrorHandler('Email, password, and full name are required', 400));
+  }
+
+  if (!validator.isEmail(email)) {
+    return next(new ErrorHandler('Invalid email format', 400));
   }
 
   // Check if user already exists
@@ -22,16 +29,54 @@ exports.register = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
+  // Generate verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+  const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
   // Insert user
   const result = await db.query(
-    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, created_at',
-    [email, hashedPassword, fullName]
+    'INSERT INTO users (email, password, full_name, is_verified, verification_token, verification_token_expires) VALUES ($1, $2, $3, FALSE, $4, $5) RETURNING id, email, full_name, avatar_url, created_at',
+    [email, hashedPassword, fullName, verificationToken, tokenExpires]
   );
 
   const user = result.rows[0];
-  const token = generateToken(user.id);
 
-  return response.success(res, 201, { user, token }, 'User registered successfully');
+  // Send verification email
+  try {
+    await mailService.sendVerificationEmail(email, verificationToken);
+  } catch (error) {
+    console.error('Error sending verification email:', error);
+    // We still registered the user, but email failed. 
+    // In a real app, we might want to handle this better.
+  }
+
+  return response.success(res, 201, { user }, 'User registered successfully. Please check your email to verify your account.');
+});
+
+exports.verifyEmail = asyncHandler(async (req, res, next) => {
+  const { token } = req.query;
+
+  if (!token) {
+    return next(new ErrorHandler('Verification token is required', 400));
+  }
+
+  const result = await db.query(
+    'SELECT * FROM users WHERE verification_token = $1 AND verification_token_expires > NOW()',
+    [token]
+  );
+
+  if (result.rows.length === 0) {
+    return next(new ErrorHandler('Invalid or expired verification token', 400));
+  }
+
+  const user = result.rows[0];
+
+  await db.query(
+    'UPDATE users SET is_verified = TRUE, verification_token = NULL, verification_token_expires = NULL WHERE id = $1',
+    [user.id]
+  );
+
+  return response.success(res, 200, null, 'Email verified successfully. You can now login.');
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -47,6 +92,10 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const user = result.rows[0];
+
+  if (!user.is_verified) {
+    return next(new ErrorHandler('Please verify your email before logging in', 401));
+  }
 
   if (!user.password) {
     return next(new ErrorHandler('Please use social login for this account', 401));

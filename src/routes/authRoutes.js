@@ -44,6 +44,24 @@ router.post('/register', authController.register);
 
 /**
  * @swagger
+ * /api/auth/verify-email:
+ *   get:
+ *     summary: Verify user email
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Email verified
+ */
+router.get('/verify-email', authController.verifyEmail);
+
+/**
+ * @swagger
  * /api/auth/login:
  *   post:
  *     summary: Login user
