@@ -33,54 +33,144 @@ exports.register = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Generate verification token
-  const verificationToken = crypto.randomBytes(32).toString('hex');
-  const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  // Generate OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpHash = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
   // Insert user
   const result = await db.query(
-    'INSERT INTO users (email, password, full_name, is_verified, verification_token, verification_token_expires) VALUES ($1, $2, $3, FALSE, $4, $5) RETURNING id, email, full_name, avatar_url, created_at',
-    [email, hashedPassword, fullName, verificationToken, tokenExpires]
+    'INSERT INTO users (email, password, full_name, is_verified, email_otp_hash, email_otp_expires) VALUES ($1, $2, $3, FALSE, $4, $5) RETURNING id, email, full_name, avatar_url, created_at',
+    [email, hashedPassword, fullName, otpHash, otpExpires]
   );
 
   const user = result.rows[0];
 
-  // Send verification email
+  // Send OTP email
   try {
-    await mailService.sendVerificationEmail(email, verificationToken);
+    await mailService.sendOtpEmail(email, otp, 'Verification');
   } catch (error) {
-    console.error('Error sending verification email:', error);
-    // We still registered the user, but email failed. 
-    // In a real app, we might want to handle this better.
+    console.error('Error sending OTP email:', error);
   }
 
-  return response.success(res, 201, { user }, 'User registered successfully. Please check your email to verify your account.');
+  return response.success(res, 201, { user }, 'User registered successfully. Please check your email for the OTP code.');
 });
 
-exports.verifyEmail = asyncHandler(async (req, res, next) => {
-  const { token } = req.query;
+exports.verifyOtp = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.body;
 
-  if (!token) {
-    return next(new ErrorHandler('Verification token is required', 400));
+  if (!email || !otp) {
+    return next(new ErrorHandler('Email and OTP are required', 400));
   }
 
+  const otpHash = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+
   const result = await db.query(
-    'SELECT * FROM users WHERE verification_token = $1 AND verification_token_expires > NOW()',
-    [token]
+    'SELECT * FROM users WHERE email = $1 AND email_otp_hash = $2 AND email_otp_expires > NOW()',
+    [email, otpHash]
   );
 
   if (result.rows.length === 0) {
-    return next(new ErrorHandler('Invalid or expired verification token', 400));
+    return next(new ErrorHandler('Invalid or expired OTP', 400));
   }
 
   const user = result.rows[0];
 
   await db.query(
-    'UPDATE users SET is_verified = TRUE, verification_token = NULL, verification_token_expires = NULL WHERE id = $1',
+    'UPDATE users SET is_verified = TRUE, email_otp_hash = NULL, email_otp_expires = NULL WHERE id = $1',
     [user.id]
   );
 
   return response.success(res, 200, null, 'Email verified successfully. You can now login.');
+});
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return next(new ErrorHandler('Email is required', 400));
+  }
+
+  const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+  if (userResult.rows.length === 0) {
+    return next(new ErrorHandler('User not found', 404));
+  }
+
+  const user = userResult.rows[0];
+
+  if (!user.password) {
+    return next(new ErrorHandler('This account uses Google Login', 400));
+  }
+
+  // Generate OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const otpHash = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+  await db.query(
+    'INSERT INTO password_resets (user_id, otp_hash, expires_at) VALUES ($1, $2, $3)',
+    [user.id, otpHash, expiresAt]
+  );
+
+  try {
+    await mailService.sendOtpEmail(email, otp, 'Password Reset');
+  } catch (error) {
+    console.error('Error sending reset OTP email:', error);
+  }
+
+  return response.success(res, 200, null, 'OTP for password reset sent to your email');
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return next(new ErrorHandler('Email, OTP, and new password are required', 400));
+  }
+
+  const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+  if (userResult.rows.length === 0) {
+    return next(new ErrorHandler('User not found', 404));
+  }
+
+  const user = userResult.rows[0];
+
+  const otpHash = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+
+  const resetResult = await db.query(
+    `SELECT * FROM password_resets 
+     WHERE user_id = $1 AND otp_hash = $2 AND used = FALSE AND expires_at > NOW()
+     ORDER BY created_at DESC LIMIT 1`,
+    [user.id, otpHash]
+  );
+
+  if (resetResult.rows.length === 0) {
+    return next(new ErrorHandler('Invalid or expired OTP', 400));
+  }
+
+  const resetRequest = resetResult.rows[0];
+
+  // Hash new password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  // Update password and mark OTP as used
+  await db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, user.id]);
+  await db.query('UPDATE password_resets SET used = TRUE WHERE id = $1', [resetRequest.id]);
+
+  return response.success(res, 200, null, 'Password reset successfully');
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
@@ -152,7 +242,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   return response.success(res, 200, result.rows[0], 'Profile updated successfully');
 });
 
-// Google ID token sign-in (for mobile/SPAs that send id_token directly)
+
 exports.googleTokenAuth = asyncHandler(async (req, res, next) => {
   const { idToken } = req.body;
 
