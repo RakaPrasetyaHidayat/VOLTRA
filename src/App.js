@@ -1,9 +1,8 @@
-import IconText from "./components/Icon";
-
+import Profile from "./pages/profile";
 function App() {
     return (
         <>
-        <IconText />  
+        <Profile />
         <div></div>
       
         

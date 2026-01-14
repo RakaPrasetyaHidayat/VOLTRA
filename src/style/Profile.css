@@ -1,0 +1,95 @@
+body {
+    min-height: 100vh;
+  background: linear-gradient(
+    to top right,
+    #999999 50%,
+    #ffffff 100%
+  );
+    font-family: "Figtree",sans-serif;
+}
+
+#box1 {
+    background-color: #0F172A;
+    border-radius: 30px;
+    width: 850px;
+    height: 450px;
+    color: white;
+    position: absolute;
+    top: 10em;
+    left: 22em;
+}
+#box2 {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-block;
+    position: absolute;
+    left: 10%;
+
+}
+#box2 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#title {
+    text-align: center;
+    margin: 25px;
+}
+
+#username {
+    position: absolute;
+    left: 13%;
+    top: 60%;
+    border-bottom: 2px solid white;
+}
+
+#box3 {
+    position: absolute;
+    left: 40%;
+    bottom: 25%;
+    width: 100%;
+}
+
+input {
+    border: none;
+    width: 50.5%;
+    background-color: white;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+label {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+#box4 {
+    font-family: "M PLUS 1p";
+    width: 100px;
+    height: 25px;
+    background-color: #0000FF;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    position: absolute;
+    top: 80%;
+    left: 80%;
+}
+
+#bio {
+    width: 430px;
+    border-radius: 10px;
+    font-weight: bold;
+    height: 50px;
+    overflow: auto;
+    resize: none;
+    border: none;
+    outline: none;
+    padding: 10px;
+}
