@@ -1,0 +1,16 @@
+.icon {
+    position: absolute;
+    left: 45em;
+    top: 10em;
+    display:inline-block
+}
+.icon h2{
+    font-size: 20px;
+    position: absolute;
+    left: 30px;
+
+}
+#img {
+    position: absolute;
+    top: 16px;
+}
