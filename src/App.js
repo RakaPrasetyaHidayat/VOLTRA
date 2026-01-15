@@ -1,8 +1,8 @@
-import Profile from "./pages/profile";
+import Login from "./pages/login";
 function App() {
     return (
         <>
-        <Profile />
+        <Login />
         <div></div>
       
         
