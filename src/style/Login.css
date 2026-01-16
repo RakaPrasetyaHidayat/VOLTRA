@@ -1,0 +1,41 @@
+body {
+    min-height: 100vh;
+  background: linear-gradient(
+    to top right,
+    #999999 50%,
+    #ffffff 100%
+  );
+    font-family: "Figtree",sans-serif;
+}
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;   /* tengah horizontal */
+    margin-top: 30px;
+}
+
+.subtitle {
+    margin-top: 6px;
+    margin-bottom: 25px;
+    font-size: 11px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    text-align: center;   /* tengah horizontal */
+}
+
+
+#box1 {
+    background-color: #0F172A;
+    border-radius: 30px;
+    width: 380px;
+    height: 480px;
+    color: white;
+}
