@@ -1,6 +1,6 @@
 body {
     min-height: 100vh;
-  background: linear-gradient(
+    background: linear-gradient(
     to top right,
     #999999 50%,
     #ffffff 100%
@@ -11,10 +11,14 @@ body {
 #box1 {
     background-color: #0F172A;
     border-radius: 30px;
-    width: 850px;
-    height: 450px;
+    display: flex;
+    justify-content: center;
+    min-width: 10vh;
+    width: 100vh;
+    max-width: 100vh;
+    height: 50vh;
     color: white;
-    position: absolute;
+    position: relative;
     top: 10em;
     left: 22em;
 }
