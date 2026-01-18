@@ -8,11 +8,18 @@ body {
     font-family: "Figtree",sans-serif;
 }
 
+.container {
+      min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 #box1 {
     background-color: #0F172A;
     border-radius: 30px;
-    display: flex;
-    justify-content: center;
+    display: inline-block;
     min-width: 10vh;
     width: 100vh;
     max-width: 100vh;

@@ -3,7 +3,7 @@ import "../style/Profile.css";
 function Profile() {
     return(
         <>
-        <div>
+        <div className="container">
             <IconText />
             <div id="box1">
                 <h2 id="title">Create Profile</h2>
