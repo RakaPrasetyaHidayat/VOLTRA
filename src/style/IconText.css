@@ -1,16 +1,18 @@
 .icon {
-    position: absolute;
-    left: 45em;
-    top: 6em;
-    display:inline-block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.icon h2{
-    font-size: 20px;
-    position: absolute;
-    left: 30px;
 
+.icon h2 {
+  font-size: 20px;
 }
+
 #img {
-    position: absolute;
-    top: 16px;
+  min-width: 25px;
+  width:25px;
+  max-width:50px;
+  min-height: 25px;
+  height:25px;
+  max-height: 50px;
 }

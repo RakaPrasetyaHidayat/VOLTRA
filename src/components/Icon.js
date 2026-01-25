@@ -7,8 +7,6 @@ function IconText() {
         id= "img"
         src={iconPic}
         alt="Icon VOLTRA"
-        width={25}
-        height={25}
       />
       <h2>VOLTRA</h2>
     </div>
