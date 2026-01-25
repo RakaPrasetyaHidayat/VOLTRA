@@ -1,41 +1,125 @@
 body {
-    min-height: 100vh;
+  min-height: 100vh;
   background: linear-gradient(
     to top right,
     #999999 50%,
     #ffffff 100%
   );
-    font-family: "Figtree",sans-serif;
+  font-family: "Figtree", sans-serif;
 }
+
+/* CENTER SCREEN */
 .container {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
+
+/* CARD */
+#box1 {
+  background-color: #0F172A;
+  border-radius: 30px;
+  width: 380px;
+  padding: 32px;
+  color: white;
+  box-shadow: 0 25px 40px rgba(0,0,0,.35);
+}
+
+/* TITLE */
 .title {
-    margin: 0;
-    font-size: 26px;
-    font-weight: 700;
-    color: #ffffff;
-    text-align: center;   /* tengah horizontal */
-    margin-top: 30px;
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
 }
 
 .subtitle {
-    margin-top: 6px;
-    margin-bottom: 25px;
-    font-size: 11px;
-    color: #cbd5e1;
-    line-height: 1.5;
-    text-align: center;   /* tengah horizontal */
+  margin-top: 6px;
+  margin-bottom: 25px;
+  font-size: 11px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* FIELD */
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #e5e7eb;
+}
+
+/* INPUT */
+input[type="email"],
+input[type="password"] {
+  border: none;
+  width: 93.5%;
+  background-color: white;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 12px;
+}
+
+/* REMEMBER + FORGOT */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin: 14px 0 20px;
+}
+
+.row a {
+  color: #4d7cff;
+  text-decoration: none;
+}
+
+/* BUTTONS */
+.btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #1e3cff;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.google-icon {
+  font-size: 18px;
 }
 
 
-#box1 {
-    background-color: #0F172A;
-    border-radius: 30px;
-    width: 380px;
-    height: 480px;
-    color: white;
+/* FOOTER */
+.footer-text {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.footer-text a {
+  color: #4d7cff;
+  text-decoration: none;
 }
