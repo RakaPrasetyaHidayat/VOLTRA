@@ -1,9 +1,9 @@
-import Login from "./pages/login";
-import Profile from "./pages/profile";
+import Login from "./pages/login/login";
+import Profile from "./pages/profile/profile";
 function App() {
     return (
         <>
-        <Profile />
+        <Login />
         <div></div>
       
         

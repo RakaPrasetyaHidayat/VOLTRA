@@ -1,5 +1,5 @@
 import iconPic from "../assets/logo.png";
-import "../style/IconText.css"
+import "../style/IconText.module.css"
 function IconText() {
   return (
     <div className="icon">

@@ -1,5 +1,5 @@
-import IconText from "../components/Icon.js";
-import "../style/Profile.css";
+import IconText from "../../components/Icon/Icon.js";
+import "./Profile.module.css";
 function Profile() {
     return(
       <div className="container">
@@ -20,13 +20,13 @@ function Profile() {
                  <h2 id="username">Username <i className="fa-regular fa-pen-to-square fa-sm"></i></h2>
                  </div>
                 <div id="box3">
-                    <label for="company">Company</label><br></br>
-                    <input type="text" id="company"></input><br></br>
-                     <label for="position">Office Position</label><br></br>
-                    <input type="text" id="position"></input><br></br>
-                     <label for="divison">Division</label><br></br>
-                    <input type="text" id="division"></input><br></br>
-                     <label for="bio">Bio</label><br></br>
+                    <label for="company" className="label_profile">Company</label><br></br>
+                    <input type="text" id="company" className="input_profile"></input><br></br>
+                     <label for="position" className="label_profile">Office Position</label><br></br>
+                    <input type="text" id="position" className="input_profile"></input><br></br>
+                     <label for="divison" className="label_profile">Division</label><br></br>
+                    <input type="text" id="division" className="input_profile"></input><br></br>
+                     <label for="bio" className="label_profile">Bio</label><br></br>
                     <textarea id="bio"></textarea>
                      <div id="box4">Confirm</div>
                 </div>

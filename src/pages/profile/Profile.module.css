@@ -62,7 +62,7 @@ body {
     display: inline-block;
 }
 
-input {
+.input_profile {
     width: 200px;
     border: none;
     background-color: white;
@@ -72,7 +72,7 @@ input {
     padding: 10px;
     margin-bottom: 10px;
 }
-label {
+.label_profile {
     font-size: 8px;
     font-weight: bold;
 }

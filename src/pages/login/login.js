@@ -1,5 +1,5 @@
-import IconText from "../components/Icon.js";
-import "../style/Login.css";
+import IconText from "../../components/Icon/Icon.js";
+import "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
 
 function Login() {
