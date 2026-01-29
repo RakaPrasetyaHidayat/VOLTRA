@@ -1,10 +1,10 @@
-import iconPic from "../assets/logo.png";
-import "../style/IconText.module.css"
+import iconPic from "../../assets/logo.png";
+import styles from "./IconText.module.css";
 function IconText() {
   return (
-    <div className="icon">
+    <div className={styles.icon}>
       <img
-        id= "img"
+        id={styles.img}
         src={iconPic}
         alt="Icon VOLTRA"
       />

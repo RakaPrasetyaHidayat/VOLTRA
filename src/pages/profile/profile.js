@@ -1,34 +1,34 @@
 import IconText from "../../components/Icon/Icon.js";
-import "./Profile.module.css";
+import styles from "./Profile.module.css";
 function Profile() {
     return(
-      <div className="container">
+      <div className={styles.container}>
             <IconText />
-            <div id="box1">
-                <h2 id="title">Create Profile</h2>
+            <div id={styles.box1}>
+                <h2 id={styles.title}>Create Profile</h2>
                 
-                <div id="box5">
-                <div id="box2">
-                <div id="icon">
+                <div id={styles.box5}>
+                <div id={styles.box2}>
+                <div id={styles.icon}>
                      <img
-                    id="profile_icon"
+                    id={styles.profile_icon}
                     src="/Mr_Raka.jpg" 
                     alt="Your Profile"
                     ></img>
                 </div>
                
-                 <h2 id="username">Username <i className="fa-regular fa-pen-to-square fa-sm"></i></h2>
+                 <h2 id={styles.username}>Username <i className="fa-regular fa-pen-to-square" id={styles.edit_icon}></i></h2>
                  </div>
-                <div id="box3">
-                    <label for="company" className="label_profile">Company</label><br></br>
-                    <input type="text" id="company" className="input_profile"></input><br></br>
-                     <label for="position" className="label_profile">Office Position</label><br></br>
-                    <input type="text" id="position" className="input_profile"></input><br></br>
-                     <label for="divison" className="label_profile">Division</label><br></br>
-                    <input type="text" id="division" className="input_profile"></input><br></br>
-                     <label for="bio" className="label_profile">Bio</label><br></br>
-                    <textarea id="bio"></textarea>
-                     <div id="box4">Confirm</div>
+                <div id={styles.box3}>
+                    <label for="company" className={styles.label_profile}>Company</label><br></br>
+                    <input type="text" id="company" className={styles.input_profile} placeholder="PT. IT SOLUSINDO"></input><br></br>
+                     <label for="position" className={styles.label_profile}>Office Position</label><br></br>
+                    <input type="text" id="position" className={styles.input_profile} placeholder="IT Manager"></input><br></br>
+                     <label for="divison" className={styles.label_profile}>Division</label><br></br>
+                    <input type="text" id="division" className={styles.input_profile} placeholder="IT Security/Cybersecurity"></input><br></br>
+                     <label for="bio" className={styles.label_profile}>Bio</label><br></br>
+                    <textarea id={styles.bio} placeholder="Efficiency is the key to finish everything faster."></textarea>
+                     <div id={styles.box4}>Confirm</div>
                 </div>
                </div>
             </div>

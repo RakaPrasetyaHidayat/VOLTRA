@@ -1,46 +1,47 @@
 import IconText from "../../components/Icon/Icon.js";
-import "./Login.module.css";
+import styles from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
 
 function Login() {
   return (
-    <div className="container">
+    <div className={styles.container}>
       
-      <div id="tengah">
+      <div id={styles.tengah}>
         <IconText />
       </div>
 
-      <div id="box1">
-        <h1 className="title">Welcome back!</h1>
-        <p className="subtitle">
+      <div id={styles.box1}>
+        
+        <h1 className={styles.title}>Welcome back!</h1>
+        <p className={styles.subtitle}>
           Please enter your account to continue...
         </p>
 
-        <div className="field">
+        <div className={styles.field}>
           <label>Email</label>
           <input type="email" placeholder="Enter your email" />
         </div>
 
-        <div className="field">
+        <div className={styles.field}>
           <label>Password</label>
           <input type="password" placeholder="Enter your password" />
         </div>
 
-        <div className="row">
-          <label className="remember">
-            <input type="checkbox" /> Remember me
+        <div className={styles.row}>
+          <label className={styles.remember}>
+            <input type="checkbox" id="checkbox"/> Remember me
           </label>
-          <a href="#" className="forgot">Forgot password?</a>
+          <a href="#" className={styles.forgot}>Forgot password?</a>
         </div>
 
-        <button className="btn btn-primary">Sign in</button>
+        <button className={`${styles.btn} ${styles.primary}`}>Sign in</button>
 
-        <button className="btn btn-google">
-            <FcGoogle className="google-icon" />
+        <button className={`${styles.btn} ${styles.google}`}>
+            <FcGoogle className={styles.google_icon} />
             Sign in with Google
         </button>
 
-        <div className="footer-text">
+        <div className={styles.footer_text}>
           Don’t have an account? <a href="#">Sign up</a>
         </div>
       </div>

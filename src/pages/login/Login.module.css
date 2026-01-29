@@ -26,7 +26,6 @@ body {
   color: white;
   box-shadow: 0 25px 40px rgba(0,0,0,.35);
 }
-
 /* TITLE */
 .title {
   margin: 0;
@@ -77,7 +76,16 @@ input[type="password"] {
   font-size: 11px;
   margin: 14px 0 20px;
 }
-
+.row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
 .row a {
   color: #4d7cff;
   text-decoration: none;
@@ -93,33 +101,36 @@ input[type="password"] {
   cursor: pointer;
 }
 
-.btn-primary {
-  background: #1e3cff;
+.primary {
+  background-color: #1e3cff;
   color: white;
   font-weight: 600;
   margin-bottom: 12px;
 }
 
-.btn-google {
+.google {
+  border: 1px solid white;
+  color: white;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
 }
 
-.google-icon {
+.google_icon {
   font-size: 18px;
 }
 
 
 /* FOOTER */
-.footer-text {
+.footer_text {
   margin-top: 18px;
   text-align: center;
   font-size: 11px;
 }
 
-.footer-text a {
+.footer_text a {
   color: #4d7cff;
   text-decoration: none;
 }

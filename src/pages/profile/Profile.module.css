@@ -4,16 +4,19 @@ body {
     #999999 50%,
     #ffffff 100%
   );
-    font-family: "Figtree",sans-serif;
+    font-family: "Figtree";
     height: 100%;
     margin: 0;
+    overflow: hidden;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   flex-wrap: wrap;
+  min-height: 100vh;
 }
 
 #box1 {
@@ -23,18 +26,18 @@ body {
     min-width: 400px;
     width: 600px;
     max-width: 800px;
-    min-height: 200px;
-    height: 400px;
+    min-height: 400px;
+    height: 450px;
     max-height: 600px;
     color: white;
 }
 #icon {
-    min-width: 150px;
-    width: 200px;
-    max-width: 250px;
-    min-height: 150px;
-    height: 200px;
-    max-height: 250px;
+    min-width: 125px;
+    width: 175px;
+    max-width: 200px;
+    min-height: 125px;
+    height: 175px;
+    max-height: 200px;
     border-radius: 50%;
     display: inline-block;
     overflow: hidden;
@@ -51,11 +54,16 @@ body {
 }
 
 #username {
-    border-bottom: 2px solid white;
+    border-bottom: 1px solid white;
     display: inline-block;
     position: relative;
-    left: 15%;
+    left: 14%;
     bottom: 8%;
+}
+#edit_icon {
+    font-size: medium;
+    font-weight: normal;
+    cursor: pointer;
 }
 
 #box3 {
@@ -63,23 +71,23 @@ body {
 }
 
 .input_profile {
-    width: 200px;
+    width: 250px;
     border: none;
     background-color: white;
     border-radius: 10px;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: bold;
     padding: 10px;
     margin-bottom: 10px;
 }
 .label_profile {
-    font-size: 8px;
+    font-size: 12px;
     font-weight: bold;
 }
 
 #box4 {
     font-family: "M PLUS 1p";
-    width: 80px;
+    width: 100px;
     height: 25px;
     background-color: #0000FF;
     border-radius: 10px;
@@ -88,26 +96,27 @@ body {
     padding: 5px;
     position: relative;
     left: 60%;
-    top: 8%;
+    top: 10%;
 }
 
 #bio {
-    width: 200px;
+    width: 250px;
     border-radius: 10px;
     font-weight: bold;
-    height: 20px;
+    height: 40px;
     overflow: auto;
     resize: none;
     border: none;
     outline: none;
     padding: 10px;
-    font-size: 8px;
+    font-size: 12px;
 }
 
 #box2 {
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     position: relative;
+    margin-top: 20px;
     margin-left: 12%;
 }
 
