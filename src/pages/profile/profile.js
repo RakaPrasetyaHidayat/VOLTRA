@@ -10,14 +10,14 @@ function Profile() {
                 <div id={styles.box5}>
                 <div id={styles.box2}>
                 <div id={styles.icon}>
+                  <i class="fa-solid fa-camera" id={styles.edit_icon}></i>
                      <img
                     id={styles.profile_icon}
                     src="/Mr_Raka.jpg" 
                     alt="Your Profile"
                     ></img>
                 </div>
-               
-                 <h2 id={styles.username}>Username <i className="fa-regular fa-pen-to-square" id={styles.edit_icon}></i></h2>
+                 <h2 id={styles.username}>Username <i className="fa-regular fa-pen-to-square" id={styles.edit_username}></i></h2>
                  </div>
                 <div id={styles.box3}>
                     <label for="company" className={styles.label_profile}>Company</label><br></br>

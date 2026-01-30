@@ -31,6 +31,7 @@ body {
     max-height: 600px;
     color: white;
 }
+
 #icon {
     min-width: 125px;
     width: 175px;
@@ -42,10 +43,16 @@ body {
     display: inline-block;
     overflow: hidden;
 }
-#icon img {
+
+#profile_icon {
+    cursor: pointer;
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+#profile_icon:hover {
+    opacity: 0.5;
 }
 
 #title {
@@ -60,10 +67,31 @@ body {
     left: 14%;
     bottom: 8%;
 }
-#edit_icon {
+
+#username:hover {
+    text-shadow: 0 0 5px #999999;
+}
+
+#edit_username {
     font-size: medium;
     font-weight: normal;
     cursor: pointer;
+}
+
+#edit_username:hover {
+    color: #999999;
+}
+
+#edit_icon {
+    position: absolute;
+    font-size: 40px;
+    left: 36%;
+    top: 36%;
+    opacity: 0.0;
+}
+
+#icon:hover #edit_icon {
+    opacity: 1.0;
 }
 
 #box3 {
@@ -80,12 +108,22 @@ body {
     padding: 10px;
     margin-bottom: 10px;
 }
+
+.input_profile:focus {
+    outline: none;
+}
+
+.input_profile:hover {
+    background-color: #999999;
+}
+
 .label_profile {
     font-size: 12px;
     font-weight: bold;
 }
 
 #box4 {
+    cursor: pointer;
     font-family: "M PLUS 1p";
     width: 100px;
     height: 25px;
@@ -99,6 +137,10 @@ body {
     top: 10%;
 }
 
+#box4:hover {
+    background-color: #0000CC;
+}
+
 #bio {
     width: 250px;
     border-radius: 10px;
@@ -110,6 +152,10 @@ body {
     outline: none;
     padding: 10px;
     font-size: 12px;
+}
+
+#bio:hover {
+    background-color: #999999;
 }
 
 #box2 {
