@@ -3,7 +3,7 @@ import Profile from "./pages/profile/profile";
 function App() {
     return (
         <>
-        <Profile />
+        <Login />
         <div></div>
       
         
