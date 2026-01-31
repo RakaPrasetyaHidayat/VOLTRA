@@ -1,4 +1,5 @@
-body {
+/* CENTER SCREEN */
+.container {
   min-height: 100vh;
   background: linear-gradient(
     to top right,
@@ -6,10 +7,6 @@ body {
     #ffffff 100%
   );
   font-family: "Figtree", sans-serif;
-}
-
-/* CENTER SCREEN */
-.container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;

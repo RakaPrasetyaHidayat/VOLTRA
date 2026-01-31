@@ -1,16 +1,11 @@
-body {
-    background: linear-gradient(
+.container {
+  background: linear-gradient(
     to top right,
     #999999 50%,
     #ffffff 100%
   );
-    font-family: "Figtree";
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
-}
-
-.container {
+  font-family: "Figtree";
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

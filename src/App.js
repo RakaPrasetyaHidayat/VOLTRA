@@ -4,8 +4,7 @@ import Registration from "./pages/registration/registration";
 function App() {
     return (
         <>
-        <Login />
-        <div></div>
+        <Registration />
 
         </>
     );
