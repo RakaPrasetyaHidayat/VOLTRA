@@ -122,7 +122,7 @@
     font-family: "M PLUS 1p";
     width: 100px;
     height: 25px;
-    background-color: #0000FF;
+    background-color: #1e3cff;
     border-radius: 10px;
     font-weight: bold;
     text-align: center;
@@ -133,7 +133,9 @@
 }
 
 #box4:hover {
-    background-color: #0000CC;
+    background-color: #4d7cff;
+    color: #0F172A;
+
 }
 
 #bio {

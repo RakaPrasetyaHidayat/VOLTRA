@@ -121,7 +121,8 @@ input[type="password"] {
 }
 
 .primary:hover {
-  background-color: #012da5;
+  background-color: #4d7cff;
+  color: #0F172A;
 }
 
 .google {
