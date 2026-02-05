@@ -62,11 +62,6 @@
     left: 14%;
     bottom: 8%;
 }
-
-#username:hover {
-    text-shadow: 0 0 5px #999999;
-}
-
 #edit_username {
     font-size: medium;
     font-weight: normal;
