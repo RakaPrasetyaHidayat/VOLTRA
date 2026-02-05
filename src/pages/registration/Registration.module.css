@@ -87,7 +87,6 @@
   border-radius: 12px;
   border: none;
   font-size: 13px;
-  font-weight: 600;
   cursor: pointer;
 }
 
@@ -95,6 +94,7 @@
 .primary {
   background: #1e3cff;
   color: white;
+  font-weight: 600;
   margin-bottom: 12px;
 }
 
