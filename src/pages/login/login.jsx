@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";

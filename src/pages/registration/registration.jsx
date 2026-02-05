@@ -1,7 +1,7 @@
 import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Registration.module.css";
 import { FcGoogle } from "react-icons/fc";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Registration() {
     return (
