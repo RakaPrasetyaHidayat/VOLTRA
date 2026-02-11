@@ -1,9 +1,61 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
+import { useState } from "react";
 
 function Login() {
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleLogin = async () => {
+  if (!form.email || !form.password) {
+    alert("Email dan password wajib diisi!");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      "https://voltra-be.vercel.app/api/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      }
+    );
+
+    const data = await res.json();
+    console.log("Login response:", data);
+
+    if (res.ok) {
+      alert("Login berhasil!");
+
+      localStorage.setItem("token", data.token);
+
+      navigate("/home");
+    } else {
+      alert(data.message || "Login gagal");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+};
+
   return (
     <div className={styles.container}>
         <IconText />
@@ -16,12 +68,24 @@ function Login() {
 
         <div className={styles.field}>
           <label>Email</label>
-          <input type="email" placeholder="Enter your email" />
+          <input
+          name="email"
+          type="email"
+          placeholder="Enter your email"
+          value={form.email}
+          onChange={handleChange}
+        />
         </div>
 
         <div className={styles.field}>
           <label>Password</label>
-          <input type="password" placeholder="Enter your password" />
+          <input
+          name="password"
+          type="password"
+          placeholder="Enter your password"
+          value={form.password}
+          onChange={handleChange}
+        />
         </div>
 
         <div className={styles.row}>
@@ -31,7 +95,12 @@ function Login() {
           <Link to="/forgot-password" className={styles.forgot}>Forgot password?</Link>
         </div>
 
-        <button className={`${styles.btn} ${styles.primary}`}>Sign in</button>
+        <button
+          onClick={handleLogin}
+          className={`${styles.btn} ${styles.primary}`}
+        >
+          Sign in
+        </button>
 
         <button className={`${styles.btn} ${styles.google}`}>
             <FcGoogle className={styles.google_icon} />
