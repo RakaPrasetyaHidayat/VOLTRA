@@ -1,0 +1,24 @@
+.icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  left: 25px;
+  top: 15px;
+}
+
+.icon h2 {
+  font-size: 25px;
+  color: white;
+}
+
+#img {
+  min-width: 30px;
+  width:40px;
+  max-width:50px;
+  min-height:30px;
+  height:40px;
+  max-height:50px;
+  border: 2px solid white;
+  border-radius: 25px;
+}
