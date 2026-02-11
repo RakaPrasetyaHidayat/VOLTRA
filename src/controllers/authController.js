@@ -33,61 +33,15 @@ exports.register = asyncHandler(async (req, res, next) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Generate OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const otpHash = crypto
-    .createHash('sha256')
-    .update(otp)
-    .digest('hex');
-  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
   // Insert user
   const result = await db.query(
-    'INSERT INTO users (email, password, full_name, is_verified, email_otp_hash, email_otp_expires) VALUES ($1, $2, $3, FALSE, $4, $5) RETURNING id, email, full_name, avatar_url, created_at',
-    [email, hashedPassword, fullName, otpHash, otpExpires]
+    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, created_at',
+    [email, hashedPassword, fullName]
   );
 
   const user = result.rows[0];
 
-  // Send OTP email
-  try {
-    await mailService.sendOtpEmail(email, otp, 'Verification');
-  } catch (error) {
-    console.error('Error sending OTP email:', error);
-  }
-
-  return response.success(res, 201, { user }, 'User registered successfully. Please check your email for the OTP code.');
-});
-
-exports.verifyOtp = asyncHandler(async (req, res, next) => {
-  const { email, otp } = req.body;
-
-  if (!email || !otp) {
-    return next(new ErrorHandler('Email and OTP are required', 400));
-  }
-
-  const otpHash = crypto
-    .createHash('sha256')
-    .update(otp)
-    .digest('hex');
-
-  const result = await db.query(
-    'SELECT * FROM users WHERE email = $1 AND email_otp_hash = $2 AND email_otp_expires > NOW()',
-    [email, otpHash]
-  );
-
-  if (result.rows.length === 0) {
-    return next(new ErrorHandler('Invalid or expired OTP', 400));
-  }
-
-  const user = result.rows[0];
-
-  await db.query(
-    'UPDATE users SET is_verified = TRUE, email_otp_hash = NULL, email_otp_expires = NULL WHERE id = $1',
-    [user.id]
-  );
-
-  return response.success(res, 200, null, 'Email verified successfully. You can now login.');
+  return response.success(res, 201, { user }, 'User registered successfully.');
 });
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
@@ -186,10 +140,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const user = result.rows[0];
-
-  if (!user.is_verified) {
-    return next(new ErrorHandler('Please verify your email before logging in', 401));
-  }
 
   if (!user.password) {
     return next(new ErrorHandler('Please use social login for this account', 401));

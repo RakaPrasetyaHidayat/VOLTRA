@@ -44,32 +44,6 @@ router.post('/register', authController.register);
 
 /**
  * @swagger
- * /api/auth/verify-otp:
- *   post:
- *     summary: Verify user email with OTP
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - otp
- *             properties:
- *               email:
- *                 type: string
- *               otp:
- *                 type: string
- *     responses:
- *       200:
- *         description: Email verified
- */
-router.post('/verify-otp', authController.verifyOtp);
-
-/**
- * @swagger
  * /api/auth/forgot-password:
  *   post:
  *     summary: Request password reset OTP

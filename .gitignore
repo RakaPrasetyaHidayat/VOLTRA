@@ -8,3 +8,4 @@ ApiDocumentation.md
 .vercel/
 scripts/
 .vercel
+.env*.local
