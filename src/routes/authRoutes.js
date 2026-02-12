@@ -44,9 +44,9 @@ router.post('/register', authController.register);
 
 /**
  * @swagger
- * /api/auth/forgot-password:
+ * /api/auth/login:
  *   post:
- *     summary: Request password reset OTP
+ *     summary: Login user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -56,12 +56,15 @@ router.post('/register', authController.register);
  *             type: object
  *             required:
  *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
+ *               password:
+ *                 type: string
  *     responses:
  *       200:
- *         description: OTP sent
+ *         description: Login successful
  */
 router.post('/login', authController.login);
 
@@ -103,5 +106,64 @@ router.get('/me', protect, authController.getMe);
  *         description: Profile updated
  */
 router.put('/profile', protect, authController.updateProfile);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: OAuth Google login
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirect to Google
+ */
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+/**
+ * @swagger
+ * /api/auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Auth]
+ *     responses:
+ *       302:
+ *         description: Redirect to frontend with token
+ */
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  (req, res) => {
+    const token = generateToken(req.user.id);
+    res.redirect(
+      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth-success?token=${token}`
+    );
+  }
+);
+
+/**
+ * @swagger
+ * /api/auth/google/token:
+ *   post:
+ *     summary: Google login via ID Token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idToken
+ *             properties:
+ *               idToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login successful
+ */
+router.post('/google/token', authController.googleTokenAuth);
 
 module.exports = router;
