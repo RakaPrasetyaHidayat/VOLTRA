@@ -107,41 +107,5 @@ router.get('/me', protect, authController.getMe);
  */
 router.put('/profile', protect, authController.updateProfile);
 
-/**
- * @swagger
- * /api/auth/google:
- *   get:
- *     summary: OAuth Google login
- *     tags: [Auth]
- *     responses:
- *       302:
- *         description: Redirect to Google
- */
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-/**
- * @swagger
- * /api/auth/google/callback:
- *   get:
- *     summary: Google OAuth callback
- *     tags: [Auth]
- *     responses:
- *       302:
- *         description: Redirect to frontend with token
- */
-router.get(
-  '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-  (req, res) => {
-    const token = generateToken(req.user.id);
-    res.redirect(
-      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth-success?token=${token}`
-    );
-  }
-);
-
 
 module.exports = router;

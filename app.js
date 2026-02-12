@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
-const passport = require('./src/config/passport');
 require('dotenv').config();
 require('reflect-metadata');
 const { AppDataSource } = require('./src/config/typeorm');
