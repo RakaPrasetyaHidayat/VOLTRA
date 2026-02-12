@@ -1,13 +1,14 @@
-const Redis = require('ioredis');
+let redisClient;
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://127.0.0.1:6379');
+if (process.env.NODE_ENV !== 'production') {
+  const Redis = require('ioredis');
+  redisClient = new Redis({
+    host: '127.0.0.1',
+    port: 6379
+  });
+} else {
+  console.log('🚫 Redis disabled in production');
+}
 
-redis.on('connect', () => {
-  console.log('Redis client connected');
-});
 
-redis.on('error', (err) => {
-  console.error('Redis error', err);
-});
-
-module.exports = redis;
+module.exports = redisClient;
