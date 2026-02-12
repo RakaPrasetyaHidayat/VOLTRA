@@ -76,3 +76,48 @@ exports.getAll = asyncHandler(async (req, res, next) => {
   );
   return response.success(res, 200, result.rows);
 });
+
+exports.update = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const userId = req.user.id;
+
+  if (!name) return next(new ErrorHandler('Server name is required', 400));
+
+  const serverResult = await db.query('SELECT * FROM servers WHERE id = $1', [id]);
+  if (serverResult.rows.length === 0) {
+    return next(new ErrorHandler('Server not found', 404));
+  }
+
+  const server = serverResult.rows[0];
+  if (server.owner_id !== userId) {
+    return next(new ErrorHandler('Only the owner can edit this project', 403));
+  }
+
+  const result = await db.query(
+    'UPDATE servers SET name = $1 WHERE id = $2 RETURNING *',
+    [name, id],
+    userId
+  );
+
+  return response.success(res, 200, result.rows[0], 'Server updated successfully');
+});
+
+exports.delete = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const serverResult = await db.query('SELECT * FROM servers WHERE id = $1', [id]);
+  if (serverResult.rows.length === 0) {
+    return next(new ErrorHandler('Server not found', 404));
+  }
+
+  const server = serverResult.rows[0];
+  if (server.owner_id !== userId) {
+    return next(new ErrorHandler('Only the owner can delete this project', 403));
+  }
+
+  await db.query('DELETE FROM servers WHERE id = $1', [id], userId);
+
+  return response.success(res, 200, null, 'Server deleted successfully');
+});

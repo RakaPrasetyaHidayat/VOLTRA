@@ -1,14 +1,17 @@
 {
+  "name": "voltra-backend",
+  "version": "1.0.0",
   "engines": {
-    "node": "20.x"
+    "node": "24.13.0"
   },
   "scripts": {
     "start": "node server.js",
+    "build": "echo \"no build needed\"",
     "dev": "nodemon app.js",
     "test-db": "node test-db.js",
     "test-auth": "node scripts/test-auth.js",
-    "test-invite": "node scripts/test-invite.js"
-    ,"test-api": "node scripts/test-api.js"
+    "test-invite": "node scripts/test-invite.js",
+    "test-api": "node scripts/test-api.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -18,7 +21,6 @@
     "express-session": "^1.18.2",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^7.0.12",
-    "nodemon": "^3.1.11",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",

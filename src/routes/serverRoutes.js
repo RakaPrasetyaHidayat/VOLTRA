@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { create, join, getAll } = require('../controllers/serverController');
+const { create, join, getAll, update, delete: deleteServer } = require('../controllers/serverController');
 const { protect } = require('../middleware/authMiddleware');
 
 
@@ -76,5 +76,54 @@ router.post('/join', protect, join);
  *         description: List of servers
  */
 router.get('/', protect, getAll);
+
+/**
+ * @swagger
+ * /api/servers/{id}:
+ *   put:
+ *     summary: Update a server (owner only)
+ *     tags: [Servers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated successfully
+ */
+router.put('/:id', protect, update);
+
+/**
+ * @swagger
+ * /api/servers/{id}:
+ *   delete:
+ *     summary: Delete a server (owner only)
+ *     tags: [Servers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Deleted successfully
+ */
+router.delete('/:id', protect, deleteServer);
 
 module.exports = router;

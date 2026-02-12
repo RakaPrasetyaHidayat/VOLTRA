@@ -19,10 +19,6 @@ exports.register = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Invalid email format', 400));
   }
 
-  if (!email.toLowerCase().endsWith('@gmail.com')) {
-    return next(new ErrorHandler('Only Gmail addresses are allowed for registration', 400));
-  }
-
   // Check if user already exists
   const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
   if (existingUser.rows.length > 0) {
@@ -190,61 +186,4 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   return response.success(res, 200, result.rows[0], 'Profile updated successfully');
-});
-
-
-exports.googleTokenAuth = asyncHandler(async (req, res, next) => {
-  const { idToken } = req.body;
-
-  if (!idToken) {
-    return next(new ErrorHandler('idToken is required', 400));
-  }
-
-  // Verify token with Google's tokeninfo endpoint
-  const resp = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
-  if (!resp.ok) {
-    return next(new ErrorHandler('Invalid Google ID token', 401));
-  }
-
-  const payload = await resp.json();
-  const email = payload.email;
-  const googleId = payload.sub;
-  const displayName = payload.name || '';
-  const avatarUrl = payload.picture || null;
-
-  if (!email || !googleId) {
-    return next(new ErrorHandler('Invalid Google token payload', 400));
-  }
-
-  // find or create user
-  let userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-  let user;
-
-  if (userResult.rows.length === 0) {
-    const newUser = await db.query(
-      'INSERT INTO users (full_name, email, avatar_url, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING *',
-      [displayName, email, avatarUrl]
-    );
-    user = newUser.rows[0];
-  } else {
-    user = userResult.rows[0];
-  }
-
-  const oauthResult = await db.query('SELECT * FROM oauth_accounts WHERE provider = $1 AND provider_user_id = $2', ['google', googleId]);
-  if (oauthResult.rows.length === 0) {
-    await db.query('INSERT INTO oauth_accounts (user_id, provider, provider_user_id) VALUES ($1, $2, $3)', [user.id, 'google', googleId]);
-  }
-
-  const token = generateToken(user.id);
-
-  const userResp = {
-    id: user.id,
-    email: user.email,
-    fullName: user.full_name,
-    avatarUrl: user.avatar_url,
-    isVerified: user.is_verified,
-    createdAt: user.created_at
-  };
-
-  return response.success(res, 200, { user: userResp, token }, 'Google sign-in successful');
 });

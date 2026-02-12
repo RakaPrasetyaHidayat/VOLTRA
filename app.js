@@ -23,18 +23,16 @@ const taskRoutes = require('./src/routes/taskRoutes');
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocs = require('./src/config/swagger');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 app.use(compression());
 
-// Swagger Documentation
-// Serve the swagger JSON and a CDN-backed Swagger UI HTML page.
+
 app.get('/api-docs/swagger.json', (req, res) => res.json(swaggerDocs));
 
 app.get('/api-docs', (req, res) => {
