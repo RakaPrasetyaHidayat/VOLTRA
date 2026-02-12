@@ -5,7 +5,6 @@ const { generateToken } = require('../utils/jwtUtils');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
-const mailService = require('../services/mailService');
 const validator = require('validator');
 
 exports.register = asyncHandler(async (req, res, next) => {
