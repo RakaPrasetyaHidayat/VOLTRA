@@ -1,6 +1,4 @@
 const db = require('../config/db');
-const bcrypt = require('bcryptjs');
-const ErrorHandler = require('../utils/errorHandler');
 
 const findUserByEmail = async (email) => {
   const res = await db.query('SELECT * FROM users WHERE email = $1', [email]);
