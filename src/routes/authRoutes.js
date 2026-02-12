@@ -143,27 +143,5 @@ router.get(
   }
 );
 
-/**
- * @swagger
- * /api/auth/google/token:
- *   post:
- *     summary: Google login via ID Token
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - idToken
- *             properties:
- *               idToken:
- *                 type: string
- *     responses:
- *       200:
- *         description: Login successful
- */
-router.post('/google/token', authController.googleTokenAuth);
 
 module.exports = router;
