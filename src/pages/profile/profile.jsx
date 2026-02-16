@@ -1,4 +1,4 @@
-import IconText from "../../components/Icon/Icon.jsx";
+import IconText from "../../components/Icon/Icon.js";
 import styles from "./Profile.module.css";
 function Profile() {
     return(
