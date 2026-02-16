@@ -6,7 +6,7 @@ import Home from "./pages/home/home";
 function App() {
     return (
         <Routes>
-        <Route path="/" element={<Registration />} />
+        <Route path="/" element={<Profile />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
