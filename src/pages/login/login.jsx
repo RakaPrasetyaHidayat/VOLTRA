@@ -32,8 +32,8 @@ function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: form.email,
-          password: form.password,
+        email: form.email,
+        password: form.password,
         }),
       }
     );
