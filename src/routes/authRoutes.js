@@ -3,6 +3,7 @@ const passport = require('passport');
 const { generateToken } = require('../utils/jwtUtils');
 const authController = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const { authRateLimiter, apiRateLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
 
@@ -40,7 +41,7 @@ const router = express.Router();
  *       201:
  *         description: User registered
  */
-router.post('/register', authController.register);
+router.post('/register', authRateLimiter, authController.register);
 
 /**
  * @swagger
@@ -66,7 +67,7 @@ router.post('/register', authController.register);
  *       200:
  *         description: Login successful
  */
-router.post('/login', authController.login);
+router.post('/login', authRateLimiter, authController.login);
 
 /**
  * @swagger
@@ -80,7 +81,7 @@ router.post('/login', authController.login);
  *       200:
  *         description: User profile
  */
-router.get('/me', protect, authController.getMe);
+router.get('/me', protect, apiRateLimiter, authController.getMe);
 
 /**
  * @swagger
@@ -105,7 +106,42 @@ router.get('/me', protect, authController.getMe);
  *       200:
  *         description: Profile updated
  */
-router.put('/profile', protect, authController.updateProfile);
+router.put('/profile', protect, apiRateLimiter, authController.updateProfile);
 
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   post:
+ *     summary: Create or update user profile with company details
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - company
+ *               - officePosition
+ *               - division
+ *               - bio
+ *             properties:
+ *               company:
+ *                 type: string
+ *               officePosition:
+ *                 type: string
+ *               division:
+ *                 type: string
+ *               bio:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Profile created successfully
+ *       400:
+ *         description: Missing required fields
+ */
+router.post('/profile', protect, apiRateLimiter, authController.createProfile);
 
 module.exports = router;

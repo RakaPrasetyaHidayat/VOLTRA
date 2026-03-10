@@ -1,11 +1,10 @@
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
-const crypto = require('crypto');
 const { generateToken } = require('../utils/jwtUtils');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
-const validator = require('validator');
+const { validateEmail, validatePassword, validateString, validateInputSanitization } = require('../middleware/validator');
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { email, password, fullName } = req.body;
@@ -14,21 +13,22 @@ exports.register = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Email, password, and full name are required', 400));
   }
 
-  if (!validator.isEmail(email)) {
-    return next(new ErrorHandler('Invalid email format', 400));
+  try {
+    validateEmail(email);
+    validatePassword(password);
+    validateString(fullName, 'Full name', 1, 255);
+  } catch (err) {
+    return next(err);
   }
 
-  // Check if user already exists
   const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
   if (existingUser.rows.length > 0) {
     return next(new ErrorHandler('User with this email already exists', 400));
   }
 
-  // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Insert user
   const result = await db.query(
     'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, created_at',
     [email, hashedPassword, fullName]
@@ -39,12 +39,17 @@ exports.register = asyncHandler(async (req, res, next) => {
   return response.success(res, 201, { user }, 'User registered successfully.');
 });
 
-
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return next(new ErrorHandler('Email and password are required', 400));
+  }
+
+  try {
+    validateEmail(email);
+  } catch (err) {
+    return next(err);
   }
 
   const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -80,7 +85,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.getMe = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const result = await db.query('SELECT id, email, full_name, avatar_url, is_verified, created_at FROM users WHERE id = $1', [userId], userId);
-  
+
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
   }
@@ -90,10 +95,18 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { fullName, avatarUrl } = req.body;
+  let { fullName, avatarUrl } = req.body;
+
+  if (fullName) {
+    try {
+      validateString(fullName, 'Full name', 1, 255);
+    } catch (err) {
+      return next(err);
+    }
+  }
 
   const result = await db.query(
-    'UPDATE users SET full_name = $1, avatar_url = $2 WHERE id = $3 RETURNING id, email, full_name, avatar_url, is_verified, created_at',
+    'UPDATE users SET full_name = $1, avatar_url = $2, updated_at = NOW() WHERE id = $3 RETURNING id, email, full_name, avatar_url, is_verified, created_at',
     [fullName, avatarUrl, userId],
     userId
   );
@@ -103,4 +116,34 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   return response.success(res, 200, result.rows[0], 'Profile updated successfully');
+});
+
+exports.createProfile = asyncHandler(async (req, res, next) => {
+  const userId = req.user.id;
+  const { company, officePosition, division, bio } = req.body;
+
+  if (!company || !officePosition || !division || !bio) {
+    return next(new ErrorHandler('Company, office position, division, and bio are required', 400));
+  }
+
+  try {
+    validateString(company, 'Company', 1, 255);
+    validateString(officePosition, 'Office position', 1, 255);
+    validateString(division, 'Division', 1, 255);
+    validateString(bio, 'Bio', 1, 1000);
+  } catch (err) {
+    return next(err);
+  }
+
+  const result = await db.query(
+    'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, updated_at = NOW() WHERE id = $5 RETURNING id, email, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at',
+    [company, officePosition, division, bio, userId],
+    userId
+  );
+
+  if (result.rows.length === 0) {
+    return next(new ErrorHandler('User not found', 404));
+  }
+
+  return response.success(res, 201, result.rows[0], 'Profile created successfully');
 });

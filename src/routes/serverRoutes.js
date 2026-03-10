@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { create, join, getAll, update, delete: deleteServer } = require('../controllers/serverController');
+const { create, join, getAll, update, delete: deleteServer, getMembers } = require('../controllers/serverController');
 const { protect } = require('../middleware/authMiddleware');
+const { apiRateLimiter } = require('../middleware/rateLimiter');
 
+router.use(apiRateLimiter);
 
 /**
  * @swagger
@@ -76,6 +78,26 @@ router.post('/join', protect, join);
  *         description: List of servers
  */
 router.get('/', protect, getAll);
+
+/**
+ * @swagger
+ * /api/servers/{id}/members:
+ *   get:
+ *     summary: Get members of a server
+ *     tags: [Servers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of members
+ */
+router.get('/:id/members', protect, getMembers);
 
 /**
  * @swagger

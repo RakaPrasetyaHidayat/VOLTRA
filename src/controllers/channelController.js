@@ -1,8 +1,8 @@
-const db = require('../config/db');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
-const redis = require('../config/redis');
+const { validateString, validateNumber } = require('../middleware/validator');
+const channelService = require('../services/channelService');
 
 exports.create = asyncHandler(async (req, res, next) => {
   const { serverId, name, description, techStack, background, problemToSolve } = req.body;
@@ -11,48 +11,85 @@ exports.create = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Server ID and name are required', 400));
   }
 
+  try {
+    validateNumber(serverId, 'Server ID');
+    validateString(name, 'Channel name', 1, 255);
+  } catch (err) {
+    return next(err);
+  }
+
   const userId = req.user.id;
-  const result = await db.query(
-    'INSERT INTO channels (server_id, name, description, tech_stack, background, problem_to_solve) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-    [serverId, name, description, techStack, background, problemToSolve],
-    userId
-  );
-  return response.success(res, 201, result.rows[0]);
+  const channel = await channelService.createChannel(serverId, name, description, techStack, background, problemToSolve);
+  return response.success(res, 201, channel, 'Channel created successfully');
 });
 
 exports.getByServer = asyncHandler(async (req, res, next) => {
   const { serverId } = req.params;
-  const userId = req.user.id;
-  const result = await db.query('SELECT * FROM channels WHERE server_id = $1', [serverId], userId);
-  return response.success(res, 200, result.rows);
+
+  try {
+    validateNumber(serverId, 'Server ID');
+  } catch (err) {
+    return next(err);
+  }
+
+  const channels = await channelService.getChannelsByServer(serverId);
+  return response.success(res, 200, channels);
 });
 
 exports.getDetail = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const userId = req.user.id;
-  const cacheKey = `channel:${id}`;
 
   try {
-    const cached = await redis.get(cacheKey);
-    if (cached) {
-      return response.success(res, 200, JSON.parse(cached));
-    }
+    validateNumber(id, 'Channel ID');
   } catch (err) {
-    console.warn('Redis get failed', err);
+    return next(err);
   }
 
-  const result = await db.query('SELECT * FROM channels WHERE id = $1', [id], userId);
-  if (result.rows.length === 0) {
+  const channel = await channelService.getChannelDetail(id);
+  if (!channel) {
     return next(new ErrorHandler('Channel not found', 404));
   }
 
-  const channel = result.rows[0];
+  return response.success(res, 200, channel);
+});
 
-  try {
-    await redis.setex(cacheKey, 300, JSON.stringify(channel));
-  } catch (err) {
-    console.warn('Redis set failed', err);
+exports.update = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, description, techStack, background, problemToSolve } = req.body;
+
+  if (!name) {
+    return next(new ErrorHandler('Channel name is required', 400));
   }
 
-  return response.success(res, 200, channel);
+  try {
+    validateNumber(id, 'Channel ID');
+    validateString(name, 'Channel name', 1, 255);
+  } catch (err) {
+    return next(err);
+  }
+
+  const channel = await channelService.updateChannel(id, name, description, techStack, background, problemToSolve);
+  if (!channel) {
+    return next(new ErrorHandler('Channel not found', 404));
+  }
+
+  return response.success(res, 200, channel, 'Channel updated successfully');
+});
+
+exports.delete = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    validateNumber(id, 'Channel ID');
+  } catch (err) {
+    return next(err);
+  }
+
+  const channel = await channelService.getChannelDetail(id);
+  if (!channel) {
+    return next(new ErrorHandler('Channel not found', 404));
+  }
+
+  await channelService.deleteChannel(id);
+  return response.success(res, 200, null, 'Channel deleted successfully');
 });
