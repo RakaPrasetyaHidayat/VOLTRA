@@ -95,19 +95,83 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  let { fullName, avatarUrl } = req.body;
+  const { fullName, avatarUrl, company, officePosition, division, bio } = req.body;
 
-  if (fullName) {
+  const updates = {};
+  const values = [];
+  let paramIndex = 1;
+
+  if (fullName !== undefined) {
     try {
       validateString(fullName, 'Full name', 1, 255);
     } catch (err) {
       return next(err);
     }
+    updates['full_name'] = `$${paramIndex}`;
+    values.push(fullName);
+    paramIndex++;
   }
 
+  if (avatarUrl !== undefined) {
+    updates['avatar_url'] = `$${paramIndex}`;
+    values.push(avatarUrl);
+    paramIndex++;
+  }
+
+  if (company !== undefined) {
+    try {
+      validateString(company, 'Company', 1, 255);
+    } catch (err) {
+      return next(err);
+    }
+    updates['company'] = `$${paramIndex}`;
+    values.push(company);
+    paramIndex++;
+  }
+
+  if (officePosition !== undefined) {
+    try {
+      validateString(officePosition, 'Office position', 1, 255);
+    } catch (err) {
+      return next(err);
+    }
+    updates['office_position'] = `$${paramIndex}`;
+    values.push(officePosition);
+    paramIndex++;
+  }
+
+  if (division !== undefined) {
+    try {
+      validateString(division, 'Division', 1, 255);
+    } catch (err) {
+      return next(err);
+    }
+    updates['division'] = `$${paramIndex}`;
+    values.push(division);
+    paramIndex++;
+  }
+
+  if (bio !== undefined) {
+    try {
+      validateString(bio, 'Bio', 1, 1000);
+    } catch (err) {
+      return next(err);
+    }
+    updates['bio'] = `$${paramIndex}`;
+    values.push(bio);
+    paramIndex++;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return next(new ErrorHandler('At least one field is required for update', 400));
+  }
+
+  const setClause = Object.entries(updates).map(([key, value]) => `${key} = ${value}`).join(', ');
+  values.push(userId);
+
   const result = await db.query(
-    'UPDATE users SET full_name = $1, avatar_url = $2, updated_at = NOW() WHERE id = $3 RETURNING id, email, full_name, avatar_url, is_verified, created_at',
-    [fullName, avatarUrl, userId],
+    `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at`,
+    values,
     userId
   );
 

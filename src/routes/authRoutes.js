@@ -87,7 +87,7 @@ router.get('/me', protect, apiRateLimiter, authController.getMe);
  * @swagger
  * /api/auth/profile:
  *   put:
- *     summary: Update current user profile
+ *     summary: Update current user profile (all fields optional)
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
@@ -102,9 +102,19 @@ router.get('/me', protect, apiRateLimiter, authController.getMe);
  *                 type: string
  *               avatarUrl:
  *                 type: string
+ *               company:
+ *                 type: string
+ *               officePosition:
+ *                 type: string
+ *               division:
+ *                 type: string
+ *               bio:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Profile updated
+ *       400:
+ *         description: At least one field is required
  */
 router.put('/profile', protect, apiRateLimiter, authController.updateProfile);
 
