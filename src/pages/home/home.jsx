@@ -5,8 +5,6 @@ import Header from "../../components/Header/Header.jsx";
 function Home() {
     return(
         <div className={styles.container}>
-            <Header />  
-            <Nav />
         </div>
     )
 }

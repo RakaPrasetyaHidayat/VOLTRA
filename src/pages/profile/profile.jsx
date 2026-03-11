@@ -2,7 +2,7 @@ import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Profile.module.css";
 function Profile() {
     return(
-      <div className={styles.container}>
+    <div className={styles.container}>
             <IconText />
             <div id={styles.box1}>
                 <h2 id={styles.title}>Create Profile</h2>
@@ -32,7 +32,7 @@ function Profile() {
                 </div>
                </div>
             </div>
-            </div>
+    </div>
     )
 }
 

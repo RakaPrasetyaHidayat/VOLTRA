@@ -45,11 +45,12 @@ function Registration() {
 
       if (res.ok) {
         alert("Register berhasil!");
-        navigate("/login");
+        navigate("/profile");
       } else {
         alert(data.message || "Register gagal");
       }
-    } catch (err) {
+    } catch (error) {
+      console.error("Register error:", error);
       alert("Server error");
     }
   };
