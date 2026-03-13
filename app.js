@@ -16,8 +16,8 @@ AppDataSource.initialize()
 const authRoutes = require('./src/routes/authRoutes');
 const testRoutes = require('./src/routes/testRoutes');
 const serverRoutes = require('./src/routes/serverRoutes');
-const channelRoutes = require('./src/routes/channelRoutes');
-const subChannelRoutes = require('./src/routes/subChannelRoutes');
+const projectRoutes = require('./src/routes/projectRoutes');
+const divisiRoutes = require('./src/routes/divisiRoutes');
 const taskRoutes = require('./src/routes/taskRoutes');
 const errorMiddleware = require('./src/middleware/errorMiddleware');
 const logger = require('./src/middleware/logger');
@@ -109,8 +109,8 @@ const apiInfo = (req, res) => {
       auth: '/api/auth',
       test: '/api/test',
       servers: '/api/servers',
-      channels: '/api/channels',
-      subChannels: '/api/sub-channels',
+      projects: '/api/projects',
+      divisions: '/api/divisions',
       tasks: '/api/tasks',
       docs: '/api-docs',
       health: '/health'
@@ -124,8 +124,8 @@ app.get('/api', apiInfo);
 app.use('/api/auth', authRoutes);
 app.use('/api/test', testRoutes);
 app.use('/api/servers', serverRoutes);
-app.use('/api/channels', channelRoutes);
-app.use('/api/sub-channels', subChannelRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/divisions', divisiRoutes);
 app.use('/api/tasks', taskRoutes);
 
 // Health check

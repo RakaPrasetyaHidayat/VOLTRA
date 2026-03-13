@@ -10,7 +10,7 @@ router.use(apiRateLimiter);
  * @swagger
  * tags:
  *   name: Tasks
- *   description: Task management within sub-channels
+ *   description: Task management within divisions
  */
 
 /**
@@ -28,10 +28,10 @@ router.use(apiRateLimiter);
  *           schema:
  *             type: object
  *             required:
- *               - subChannelId
+ *               - divisiId
  *               - name
  *             properties:
- *               subChannelId:
+ *               divisiId:
  *                 type: integer
  *               name:
  *                 type: string
@@ -69,15 +69,15 @@ router.get('/:id', protect, taskController.getDetail);
 
 /**
  * @swagger
- * /api/tasks/sub-channel/{subChannelId}:
+ * /api/tasks/division/{divisiId}:
  *   get:
- *     summary: Get all tasks for a sub-channel
+ *     summary: Get all tasks for a division
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: subChannelId
+ *         name: divisiId
  *         required: true
  *         schema:
  *           type: integer
@@ -85,7 +85,7 @@ router.get('/:id', protect, taskController.getDetail);
  *       200:
  *         description: List of tasks
  */
-router.get('/sub-channel/:subChannelId', protect, taskController.getBySubChannel);
+router.get('/division/:divisiId', protect, taskController.getByDivision);
 
 /**
  * @swagger
