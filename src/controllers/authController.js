@@ -30,13 +30,24 @@ exports.register = asyncHandler(async (req, res, next) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const result = await db.query(
-    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, created_at',
+    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, is_verified, created_at',
     [email, hashedPassword, fullName]
   );
 
   const user = result.rows[0];
 
-  return response.success(res, 201, { user }, 'User registered successfully.');
+  const token = generateToken(user.id);
+
+  const userResp = {
+    id: user.id,
+    email: user.email,
+    fullName: user.full_name,
+    avatarUrl: user.avatar_url,
+    isVerified: user.is_verified,
+    createdAt: user.created_at
+  };
+
+  return response.success(res, 201, { user: userResp, token }, 'User registered successfully.');
 });
 
 exports.login = asyncHandler(async (req, res, next) => {

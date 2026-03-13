@@ -39,7 +39,7 @@ const router = express.Router();
  *                 type: string
  *     responses:
  *       201:
- *         description: User registered
+ *         description: User registered successfully with authorization token
  */
 router.post('/register', authRateLimiter, authController.register);
 
