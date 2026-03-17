@@ -95,7 +95,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 exports.getMe = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const result = await db.query('SELECT id, email, full_name, avatar_url, is_verified, created_at FROM users WHERE id = $1', [userId], userId);
+  const result = await db.query('SELECT id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at FROM users WHERE id = $1', [userId], userId);
 
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
@@ -106,7 +106,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { fullName, avatarUrl, company, officePosition, division, bio } = req.body;
+  const { fullName, username, company, officePosition, division, bio } = req.body;
 
   const updates = {};
   const values = [];
@@ -123,9 +123,23 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     paramIndex++;
   }
 
-  if (avatarUrl !== undefined) {
+  if (username !== undefined) {
+    try {
+      validateString(username, 'Username', 1, 255);
+    } catch (err) {
+      return next(err);
+    }
+    updates['username'] = `$${paramIndex}`;
+    values.push(username);
+    paramIndex++;
+  }
+
+  // Handle avatar file upload
+  if (req.file) {
+    const base64 = req.file.buffer.toString('base64');
+    const dataUri = `data:${req.file.mimetype};base64,${base64}`;
     updates['avatar_url'] = `$${paramIndex}`;
-    values.push(avatarUrl);
+    values.push(dataUri);
     paramIndex++;
   }
 
@@ -181,7 +195,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   values.push(userId);
 
   const result = await db.query(
-    `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at`,
+    `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
     values,
     userId
   );
@@ -195,7 +209,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
 exports.createProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { company, officePosition, division, bio } = req.body;
+  const { company, officePosition, division, bio, username } = req.body;
 
   if (!company || !officePosition || !division || !bio) {
     return next(new ErrorHandler('Company, office position, division, and bio are required', 400));
@@ -210,11 +224,29 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  const result = await db.query(
-    'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, updated_at = NOW() WHERE id = $5 RETURNING id, email, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at',
-    [company, officePosition, division, bio, userId],
-    userId
-  );
+  // Handle avatar file upload
+  let avatarUrl = null;
+  if (req.file) {
+    const base64 = req.file.buffer.toString('base64');
+    avatarUrl = `data:${req.file.mimetype};base64,${base64}`;
+  }
+
+  let query, params;
+  if (avatarUrl && username) {
+    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, avatar_url = $5, username = $6, updated_at = NOW() WHERE id = $7 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
+    params = [company, officePosition, division, bio, avatarUrl, username, userId];
+  } else if (avatarUrl) {
+    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, avatar_url = $5, updated_at = NOW() WHERE id = $6 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
+    params = [company, officePosition, division, bio, avatarUrl, userId];
+  } else if (username) {
+    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, username = $5, updated_at = NOW() WHERE id = $6 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
+    params = [company, officePosition, division, bio, username, userId];
+  } else {
+    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, updated_at = NOW() WHERE id = $5 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
+    params = [company, officePosition, division, bio, userId];
+  }
+
+  const result = await db.query(query, params, userId);
 
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
