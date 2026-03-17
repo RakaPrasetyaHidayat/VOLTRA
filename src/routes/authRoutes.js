@@ -4,7 +4,6 @@ const { generateToken } = require('../utils/jwtUtils');
 const authController = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 const { authRateLimiter, apiRateLimiter } = require('../middleware/rateLimiter');
-const { uploadAvatar } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
@@ -88,59 +87,51 @@ router.get('/me', protect, apiRateLimiter, authController.getMe);
  * @swagger
  * /api/auth/profile:
  *   put:
- *     summary: Update current user profile (all fields optional, supports avatar upload)
+ *     summary: Update current user profile (all fields optional)
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             properties:
  *               fullName:
  *                 type: string
- *                 description: User full name
- *               avatar:
- *                 type: string
- *                 format: binary
- *                 description: Profile picture (JPEG, PNG, GIF, WEBP, max 2MB)
  *               username:
  *                 type: string
- *                 description: Username
+ *               avatar:
+ *                 type: string
  *               company:
  *                 type: string
- *                 description: Company name
  *               officePosition:
  *                 type: string
- *                 description: Office position / job title
  *               division:
  *                 type: string
- *                 description: Division
  *               bio:
  *                 type: string
- *                 description: Short bio
  *     responses:
  *       200:
  *         description: Profile updated
  *       400:
  *         description: At least one field is required
  */
-router.put('/profile', protect, apiRateLimiter, uploadAvatar, authController.updateProfile);
+router.put('/profile', protect, apiRateLimiter, authController.updateProfile);
 
 /**
  * @swagger
  * /api/auth/profile:
  *   post:
- *     summary: Create or update user profile with company details (supports avatar upload)
+ *     summary: Create or update user profile with company details
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
- *         multipart/form-data:
+ *         application/json:
  *           schema:
  *             type: object
  *             required:
@@ -151,29 +142,22 @@ router.put('/profile', protect, apiRateLimiter, uploadAvatar, authController.upd
  *             properties:
  *               company:
  *                 type: string
- *                 description: Company name
  *               officePosition:
  *                 type: string
- *                 description: Office position / job title
  *               division:
  *                 type: string
- *                 description: Division
  *               bio:
  *                 type: string
- *                 description: Short bio
  *               avatar:
  *                 type: string
- *                 format: binary
- *                 description: Profile picture (JPEG, PNG, GIF, WEBP, max 2MB)
  *               username:
  *                 type: string
- *                 description: Username (optional)
  *     responses:
  *       201:
  *         description: Profile created successfully
  *       400:
  *         description: Missing required fields
  */
-router.post('/profile', protect, apiRateLimiter, uploadAvatar, authController.createProfile);
+router.post('/profile', protect, apiRateLimiter, authController.createProfile);
 
 module.exports = router;

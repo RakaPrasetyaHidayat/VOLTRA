@@ -106,7 +106,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { fullName, username, company, officePosition, division, bio } = req.body;
+  const { fullName, username, avatar, company, officePosition, division, bio } = req.body;
 
   const updates = {};
   const values = [];
@@ -134,12 +134,10 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     paramIndex++;
   }
 
-  // Handle avatar file upload
-  if (req.file) {
-    const base64 = req.file.buffer.toString('base64');
-    const dataUri = `data:${req.file.mimetype};base64,${base64}`;
+  // Handle avatar from JSON body (base64 string or URL)
+  if (avatar !== undefined) {
     updates['avatar_url'] = `$${paramIndex}`;
-    values.push(dataUri);
+    values.push(avatar);
     paramIndex++;
   }
 
@@ -209,7 +207,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
 exports.createProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { company, officePosition, division, bio, username } = req.body;
+  const { company, officePosition, division, bio, avatar, username } = req.body;
 
   if (!company || !officePosition || !division || !bio) {
     return next(new ErrorHandler('Company, office position, division, and bio are required', 400));
@@ -224,12 +222,8 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  // Handle avatar file upload
-  let avatarUrl = null;
-  if (req.file) {
-    const base64 = req.file.buffer.toString('base64');
-    avatarUrl = `data:${req.file.mimetype};base64,${base64}`;
-  }
+  // Handle avatar from JSON body (base64 string or URL)
+  const avatarUrl = avatar || null;
 
   let query, params;
   if (avatarUrl && username) {
