@@ -85,7 +85,7 @@ router.get('/:id', protect, taskController.getDetail);
  *       200:
  *         description: List of tasks
  */
-router.get('/division/:divisiId', protect, taskController.getByDivision);
+router.get('/division/:divisiId', protect, taskController.getBySubChannel);
 
 /**
  * @swagger
