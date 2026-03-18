@@ -29,14 +29,13 @@ const router = express.Router();
  *             required:
  *               - email
  *               - password
- *               - fullName
+ *               - username
  *             properties:
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               fullName:
- *                 type: string
+ *               
  *     responses:
  *       201:
  *         description: User registered successfully with authorization token
@@ -98,8 +97,6 @@ router.get('/me', protect, apiRateLimiter, authController.getMe);
  *           schema:
  *             type: object
  *             properties:
- *               fullName:
- *                 type: string
  *               username:
  *                 type: string
  *               avatar:

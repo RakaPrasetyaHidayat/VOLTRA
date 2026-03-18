@@ -7,16 +7,16 @@ const response = require('../utils/response');
 const { validateEmail, validatePassword, validateString, validateInputSanitization } = require('../middleware/validator');
 
 exports.register = asyncHandler(async (req, res, next) => {
-  const { email, password, fullName } = req.body;
+  const { email, password, username } = req.body;
 
-  if (!email || !password || !fullName) {
+  if (!email || !password || !username) {
     return next(new ErrorHandler('Email, password, and full name are required', 400));
   }
 
   try {
     validateEmail(email);
     validatePassword(password);
-    validateString(fullName, 'Full name', 1, 255);
+    validateString(username, 'Full name', 1, 255);
   } catch (err) {
     return next(err);
   }
@@ -31,7 +31,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   const result = await db.query(
     'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, is_verified, created_at',
-    [email, hashedPassword, fullName]
+    [email, hashedPassword, username]
   );
 
   const user = result.rows[0];
@@ -41,7 +41,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   const userResp = {
     id: user.id,
     email: user.email,
-    fullName: user.full_name,
+    username: user.full_name,
     avatarUrl: user.avatar_url,
     isVerified: user.is_verified,
     createdAt: user.created_at
@@ -84,7 +84,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   const userResp = {
     id: user.id,
     email: user.email,
-    fullName: user.full_name,
+    username: user.full_name,
     avatarUrl: user.avatar_url,
     isVerified: user.is_verified,
     createdAt: user.created_at
@@ -106,20 +106,20 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const { fullName, username, avatar, company, officePosition, division, bio } = req.body;
+  const { username, avatar, company, officePosition, division, bio } = req.body;
 
   const updates = {};
   const values = [];
   let paramIndex = 1;
 
-  if (fullName !== undefined) {
+  if (username !== undefined) {
     try {
-      validateString(fullName, 'Full name', 1, 255);
+      validateString(username, 'Full name', 1, 255);
     } catch (err) {
       return next(err);
     }
     updates['full_name'] = `$${paramIndex}`;
-    values.push(fullName);
+    values.push(username);
     paramIndex++;
   }
 
