@@ -114,7 +114,7 @@ const deleteServer = async (serverId, userId) => {
 
 const getServerMembers = async (serverId, userId) => {
   const result = await db.query(
-    `SELECT sm.*, u.email, u.full_name, u.avatar_url 
+    `SELECT sm.*, u.email, u.username, u.avatar_url 
      FROM server_members sm 
      JOIN users u ON sm.user_id = u.id 
      WHERE sm.server_id = $1`,

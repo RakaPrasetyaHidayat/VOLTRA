@@ -57,6 +57,18 @@ const validateInputSanitization = (obj) => {
   return sanitized;
 };
 
+const validateUsername = (username) => {
+  if (!username || typeof username !== 'string') {
+    throw new ErrorHandler('Username is required', 400);
+  }
+  if (username.length < 3 || username.length > 30) {
+    throw new ErrorHandler('Username must be between 3 and 30 characters', 400);
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    throw new ErrorHandler('Username can only contain letters, numbers, and underscores', 400);
+  }
+};
+
 module.exports = {
   validateEmail,
   validatePassword,
@@ -64,4 +76,5 @@ module.exports = {
   validateNumber,
   validateCompletionPercentage,
   validateInputSanitization,
+  validateUsername,
 };

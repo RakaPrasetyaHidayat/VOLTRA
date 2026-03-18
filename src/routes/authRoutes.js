@@ -35,7 +35,8 @@ const router = express.Router();
  *                 type: string
  *               password:
  *                 type: string
- *               
+ *               username:
+ *                 type: string
  *     responses:
  *       201:
  *         description: User registered successfully with authorization token

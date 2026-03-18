@@ -11,7 +11,7 @@ const createTask = async (subChannelId, name, details, completionPercentage = 0,
 
 const getTasksBySubChannel = async (subChannelId) => {
   const result = await db.query(
-    `SELECT t.*, u.full_name as assigned_person_name 
+    `SELECT t.*, u.username as assigned_person_name 
      FROM tasks t 
      LEFT JOIN users u ON t.assigned_user_id = u.id 
      WHERE t.sub_channel_id = $1
@@ -23,7 +23,7 @@ const getTasksBySubChannel = async (subChannelId) => {
 
 const getTaskDetail = async (taskId) => {
   const result = await db.query(
-    `SELECT t.*, u.full_name as assigned_person_name 
+    `SELECT t.*, u.username as assigned_person_name 
      FROM tasks t 
      LEFT JOIN users u ON t.assigned_user_id = u.id 
      WHERE t.id = $1`,

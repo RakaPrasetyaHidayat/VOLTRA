@@ -4,52 +4,68 @@ const { generateToken } = require('../utils/jwtUtils');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorHandler = require('../utils/errorHandler');
 const response = require('../utils/response');
-const { validateEmail, validatePassword, validateString, validateInputSanitization } = require('../middleware/validator');
+const { validateEmail, validatePassword, validateUsername, validateString } = require('../middleware/validator');
 
+/**
+ * Helper: format user row from DB (snake_case) to camelCase response
+ */
+const formatUser = (row) => ({
+  id: row.id,
+  email: row.email,
+  username: row.username,
+  avatarUrl: row.avatar_url || null,
+  company: row.company || null,
+  officePosition: row.office_position || null,
+  division: row.division || null,
+  bio: row.bio || null,
+  isVerified: row.is_verified,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at || null,
+});
+
+// ─── REGISTER ────────────────────────────────────────────────────────────────
 exports.register = asyncHandler(async (req, res, next) => {
   const { email, password, username } = req.body;
 
   if (!email || !password || !username) {
-    return next(new ErrorHandler('Email, password, and full name are required', 400));
+    return next(new ErrorHandler('Email, password, and username are required', 400));
   }
 
   try {
     validateEmail(email);
     validatePassword(password);
-    validateString(username, 'Full name', 1, 255);
+    validateUsername(username);
   } catch (err) {
     return next(err);
   }
 
-  const existingUser = await db.query('SELECT * FROM users WHERE email = $1', [email]);
-  if (existingUser.rows.length > 0) {
+  // Check duplicate email
+  const existingEmail = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+  if (existingEmail.rows.length > 0) {
     return next(new ErrorHandler('User with this email already exists', 400));
   }
 
-  const salt = await bcrypt.genSalt(10);
+  // Check duplicate username
+  const existingUsername = await db.query('SELECT id FROM users WHERE username = $1', [username]);
+  if (existingUsername.rows.length > 0) {
+    return next(new ErrorHandler('Username is already taken', 400));
+  }
+
+  const salt = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const result = await db.query(
-    'INSERT INTO users (email, password, full_name, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, full_name, avatar_url, is_verified, created_at',
+    'INSERT INTO users (email, password, username, is_verified) VALUES ($1, $2, $3, TRUE) RETURNING id, email, username, avatar_url, is_verified, created_at',
     [email, hashedPassword, username]
   );
 
   const user = result.rows[0];
+  const token = generateToken(user);
 
-  const token = generateToken(user.id);
-
-  const userResp = {
-    id: user.id,
-    email: user.email,
-    username: user.full_name,
-    avatarUrl: user.avatar_url,
-    isVerified: user.is_verified,
-    createdAt: user.created_at
-  };
-
-  return response.success(res, 201, { user: userResp, token }, 'User registered successfully.');
+  return response.success(res, 201, { user: formatUser(user), token }, 'User registered successfully.');
 });
 
+// ─── LOGIN ───────────────────────────────────────────────────────────────────
 exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -79,31 +95,28 @@ exports.login = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('Invalid credentials', 401));
   }
 
-  const token = generateToken(user.id);
+  const token = generateToken(user);
 
-  const userResp = {
-    id: user.id,
-    email: user.email,
-    username: user.full_name,
-    avatarUrl: user.avatar_url,
-    isVerified: user.is_verified,
-    createdAt: user.created_at
-  };
-
-  return response.success(res, 200, { user: userResp, token }, 'Login successful');
+  return response.success(res, 200, { user: formatUser(user), token }, 'Login successful');
 });
 
+// ─── GET ME ──────────────────────────────────────────────────────────────────
 exports.getMe = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const result = await db.query('SELECT id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at FROM users WHERE id = $1', [userId], userId);
+  const result = await db.query(
+    'SELECT id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at FROM users WHERE id = $1',
+    [userId],
+    userId
+  );
 
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
   }
 
-  return response.success(res, 200, result.rows[0]);
+  return response.success(res, 200, { user: formatUser(result.rows[0]) });
 });
 
+// ─── UPDATE PROFILE ──────────────────────────────────────────────────────────
 exports.updateProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const { username, avatar, company, officePosition, division, bio } = req.body;
@@ -114,27 +127,20 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   if (username !== undefined) {
     try {
-      validateString(username, 'Full name', 1, 255);
+      validateUsername(username);
     } catch (err) {
       return next(err);
     }
-    updates['full_name'] = `$${paramIndex}`;
-    values.push(username);
-    paramIndex++;
-  }
-
-  if (username !== undefined) {
-    try {
-      validateString(username, 'Username', 1, 255);
-    } catch (err) {
-      return next(err);
+    // Check if username is taken by another user
+    const existing = await db.query('SELECT id FROM users WHERE username = $1 AND id != $2', [username, userId]);
+    if (existing.rows.length > 0) {
+      return next(new ErrorHandler('Username is already taken', 400));
     }
     updates['username'] = `$${paramIndex}`;
     values.push(username);
     paramIndex++;
   }
 
-  // Handle avatar from JSON body (base64 string or URL)
   if (avatar !== undefined) {
     updates['avatar_url'] = `$${paramIndex}`;
     values.push(avatar);
@@ -142,44 +148,28 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   }
 
   if (company !== undefined) {
-    try {
-      validateString(company, 'Company', 1, 255);
-    } catch (err) {
-      return next(err);
-    }
+    try { validateString(company, 'Company', 1, 255); } catch (err) { return next(err); }
     updates['company'] = `$${paramIndex}`;
     values.push(company);
     paramIndex++;
   }
 
   if (officePosition !== undefined) {
-    try {
-      validateString(officePosition, 'Office position', 1, 255);
-    } catch (err) {
-      return next(err);
-    }
+    try { validateString(officePosition, 'Office position', 1, 255); } catch (err) { return next(err); }
     updates['office_position'] = `$${paramIndex}`;
     values.push(officePosition);
     paramIndex++;
   }
 
   if (division !== undefined) {
-    try {
-      validateString(division, 'Division', 1, 255);
-    } catch (err) {
-      return next(err);
-    }
+    try { validateString(division, 'Division', 1, 255); } catch (err) { return next(err); }
     updates['division'] = `$${paramIndex}`;
     values.push(division);
     paramIndex++;
   }
 
   if (bio !== undefined) {
-    try {
-      validateString(bio, 'Bio', 1, 1000);
-    } catch (err) {
-      return next(err);
-    }
+    try { validateString(bio, 'Bio', 1, 1000); } catch (err) { return next(err); }
     updates['bio'] = `$${paramIndex}`;
     values.push(bio);
     paramIndex++;
@@ -193,7 +183,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
   values.push(userId);
 
   const result = await db.query(
-    `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
+    `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
     values,
     userId
   );
@@ -202,9 +192,10 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
     return next(new ErrorHandler('User not found', 404));
   }
 
-  return response.success(res, 200, result.rows[0], 'Profile updated successfully');
+  return response.success(res, 200, { user: formatUser(result.rows[0]) }, 'Profile updated successfully');
 });
 
+// ─── CREATE PROFILE ──────────────────────────────────────────────────────────
 exports.createProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const { company, officePosition, division, bio, avatar, username } = req.body;
@@ -218,33 +209,46 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
     validateString(officePosition, 'Office position', 1, 255);
     validateString(division, 'Division', 1, 255);
     validateString(bio, 'Bio', 1, 1000);
+    if (username) validateUsername(username);
   } catch (err) {
     return next(err);
   }
 
-  // Handle avatar from JSON body (base64 string or URL)
-  const avatarUrl = avatar || null;
+  // Build dynamic update using same pattern as updateProfile
+  const fields = { company, office_position: officePosition, division, bio };
+  const values = [];
+  let paramIndex = 1;
 
-  let query, params;
-  if (avatarUrl && username) {
-    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, avatar_url = $5, username = $6, updated_at = NOW() WHERE id = $7 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
-    params = [company, officePosition, division, bio, avatarUrl, username, userId];
-  } else if (avatarUrl) {
-    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, avatar_url = $5, updated_at = NOW() WHERE id = $6 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
-    params = [company, officePosition, division, bio, avatarUrl, userId];
-  } else if (username) {
-    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, username = $5, updated_at = NOW() WHERE id = $6 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
-    params = [company, officePosition, division, bio, username, userId];
-  } else {
-    query = 'UPDATE users SET company = $1, office_position = $2, division = $3, bio = $4, updated_at = NOW() WHERE id = $5 RETURNING id, email, username, full_name, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at';
-    params = [company, officePosition, division, bio, userId];
+  if (avatar) {
+    fields['avatar_url'] = avatar;
+  }
+  if (username) {
+    // Check uniqueness
+    const existing = await db.query('SELECT id FROM users WHERE username = $1 AND id != $2', [username, userId]);
+    if (existing.rows.length > 0) {
+      return next(new ErrorHandler('Username is already taken', 400));
+    }
+    fields['username'] = username;
   }
 
-  const result = await db.query(query, params, userId);
+  const setClauses = [];
+  for (const [key, val] of Object.entries(fields)) {
+    values.push(val);
+    setClauses.push(`${key} = $${paramIndex}`);
+    paramIndex++;
+  }
+
+  values.push(userId);
+
+  const result = await db.query(
+    `UPDATE users SET ${setClauses.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
+    values,
+    userId
+  );
 
   if (result.rows.length === 0) {
     return next(new ErrorHandler('User not found', 404));
   }
 
-  return response.success(res, 201, result.rows[0], 'Profile created successfully');
+  return response.success(res, 201, { user: formatUser(result.rows[0]) }, 'Profile created successfully');
 });
