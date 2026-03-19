@@ -105,8 +105,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
   const result = await db.query(
     'SELECT id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at FROM users WHERE id = $1',
-    [userId],
-    userId
+    [userId]
   );
 
   if (result.rows.length === 0) {
@@ -184,8 +183,7 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
   const result = await db.query(
     `UPDATE users SET ${setClause}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
-    values,
-    userId
+    values
   );
 
   if (result.rows.length === 0) {
@@ -242,8 +240,7 @@ exports.createProfile = asyncHandler(async (req, res, next) => {
 
   const result = await db.query(
     `UPDATE users SET ${setClauses.join(', ')}, updated_at = NOW() WHERE id = $${paramIndex} RETURNING id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at`,
-    values,
-    userId
+    values
   );
 
   if (result.rows.length === 0) {
