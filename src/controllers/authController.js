@@ -102,6 +102,10 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 // ─── GET ME ──────────────────────────────────────────────────────────────────
 exports.getMe = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    return next(new ErrorHandler('Not authorized', 401));
+  }
+
   const userId = req.user.id;
   const result = await db.query(
     'SELECT id, email, username, avatar_url, company, office_position, division, bio, is_verified, created_at, updated_at FROM users WHERE id = $1',
@@ -117,6 +121,10 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 
 // ─── UPDATE PROFILE ──────────────────────────────────────────────────────────
 exports.updateProfile = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    return next(new ErrorHandler('Not authorized', 401));
+  }
+
   const userId = req.user.id;
   const { username, avatar, company, officePosition, division, bio } = req.body;
 
@@ -195,6 +203,10 @@ exports.updateProfile = asyncHandler(async (req, res, next) => {
 
 // ─── CREATE PROFILE ──────────────────────────────────────────────────────────
 exports.createProfile = asyncHandler(async (req, res, next) => {
+  if (!req.user) {
+    return next(new ErrorHandler('Not authorized', 401));
+  }
+
   const userId = req.user.id;
   const { company, officePosition, division, bio, avatar, username } = req.body;
 

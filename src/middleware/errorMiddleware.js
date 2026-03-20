@@ -3,6 +3,7 @@ const ErrorHandler = require('../utils/errorHandler');
 module.exports = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
+  error.statusCode = err.statusCode;
 
   // Log for developer
   if (process.env.NODE_ENV !== 'production') {
