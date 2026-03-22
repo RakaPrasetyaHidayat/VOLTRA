@@ -8,7 +8,7 @@ function Registration() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -34,7 +34,7 @@ function Registration() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            fullName: form.fullName,
+            username: form.username,
             email: form.email,
             password: form.password,
           }),
@@ -42,12 +42,25 @@ function Registration() {
       );
 
       const data = await res.json();
+      console.log("Register response:", data);
 
-      if (res.ok) {
+     if (res.ok) {
         alert("Register berhasil!");
-        navigate("/profile");
-      } else {
-        alert(data.message || "Register gagal");
+
+        // DEBUG: Lihat struktur data yang datang
+        console.log("Data dari server:", data);
+
+        // BEBERAPA BE mengirim token di data.token, data.data.token, atau data.accessToken
+        const token = data.token || (data.data && data.data.token) || data.accessToken;
+
+        if (token) {
+          localStorage.setItem("token", token);
+          navigate("/profile");
+        } else {
+          console.error("Token tidak ditemukan dalam response server");
+          alert("Registrasi sukses, silakan login manual.");
+          navigate("/login");
+        }
       }
     } catch (error) {
       console.error("Register error:", error);
@@ -65,10 +78,10 @@ function Registration() {
         <div className={styles.field}>
         <label>Username</label>
         <input
-          name="fullName"
+          name="username"
           type="text"
           placeholder="Enter your name"
-          value={form.fullName}
+          value={form.username}
           onChange={handleChange}
         />
       </div>

@@ -44,6 +44,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 1;
 }
 
 #profile_icon:hover {
@@ -56,20 +57,63 @@
 }
 
 #username {
-    border-bottom: 1px solid white;
-    display: inline-block;
-    position: relative;
-    left: 14%;
-    bottom: 8%;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    max-width: 120px;
 }
+
+
+
+.username_wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    left: 8%; /* Mengikuti posisi lama Anda */
+    bottom: 2%;
+    gap: 4px; /* Jarak antara teks dan ikon */
+    border-bottom: 1px solid white;
+    width: auto;
+    max-width: 140px;
+}
+
+.username_wrapper:focus-within{
+    border-bottom: none;
+}
+
+.text_truncate {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; 
+}
+
 #edit_username {
     font-size: medium;
     font-weight: normal;
     cursor: pointer;
+    margin: 2px;
+    position: relative;
+    flex-shrink: 0; /* WAJIB: Agar ikon tidak gepeng/mengecil saat teks panjang */
+    color: white;
 }
 
 #edit_username:hover {
     color: #999999;
+}
+
+.input_edit_name {
+  background: rgb(255, 255, 255); /* Transparan gelap */
+  border: none;
+  border-radius: 5px;
+  color: black;
+  font-size: 16px;
+  padding: 5px 10px;
+  font-weight: bold;
+  width: 120px;
+  outline: none;
+  font-family: inherit;
 }
 
 #edit_icon {
@@ -78,14 +122,25 @@
     left: 36%;
     top: 36%;
     opacity: 0.0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    opacity: 0; /* Tidak terlihat sebelum hover */
+    transition: opacity 0.3s ease;
+    z-index: 10; /* KUNCI: Harus di atas foto profil */
+    cursor: pointer !important; /* Memastikan kursor tangan muncul */
 }
+
 
 #icon:hover #edit_icon {
     opacity: 1.0;
 }
 
 #box3 {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
 }
 
 .input_profile {
