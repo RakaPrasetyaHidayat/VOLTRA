@@ -202,7 +202,7 @@ body {
     resize: none;
     border: none;
     outline: none;
-    padding: 10px;
+    padding: 12px;
     font-size: 12px;
 }
 
@@ -232,7 +232,7 @@ body {
     flex-direction: row;
     }
     #box1 {
-    width: 60vw;
+    width: 80vw;
     height: auto;
     display: flex;
     flex-direction: row;
@@ -311,5 +311,8 @@ body {
     #edit_icon {
         left: 30%;
         top: 30%;
+    }
+    .label_profile{
+    width: 85%;
     }
 }
