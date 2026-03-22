@@ -160,3 +160,13 @@ input[type="password"] {
 .footer_text a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 768px){
+
+  #box1 {
+  width: 60vw;
+  }
+  .title {
+  font-size: 20px;
+  }
+}

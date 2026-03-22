@@ -6,6 +6,8 @@
     #999999 50%,
     #ffffff 100%
   );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,4 +139,17 @@
 
 .footer_text a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px){
+  .container{
+    padding-top: 5%;
+    padding-bottom: 10%;
+  }
+  #box1 {
+  width: 60vw;
+  }
+  .title {
+  font-size: 20px;
+  }
 }

@@ -162,16 +162,16 @@ function Profile() {
 
           <div id={styles.box3}>
             <label className={styles.label_profile}>Company</label>
-            <input type="text" name="company" className={styles.input_profile} value={form.company} onChange={handleChange} />
+            <input type="text" name="company" className={styles.input_profile} value={form.company} onChange={handleChange} placeholder="PT. IT Solusindo"/>
 
             <label className={styles.label_profile}>Office Position</label>
-            <input type="text" name="officePosition" className={styles.input_profile} value={form.officePosition} onChange={handleChange} />
+            <input type="text" name="officePosition" className={styles.input_profile} value={form.officePosition} onChange={handleChange} placeholder="IT Manager"/>
 
             <label className={styles.label_profile}>Division</label>
-            <input type="text" name="division" className={styles.input_profile} value={form.division} onChange={handleChange} />
+            <input type="text" name="division" className={styles.input_profile} value={form.division} onChange={handleChange} placeholder="Software Development"/>
 
             <label className={styles.label_profile}>Bio</label>
-            <textarea name="bio" id={styles.bio} value={form.bio} onChange={handleChange}></textarea>
+            <textarea name="bio" id={styles.bio} value={form.bio} onChange={handleChange} placeholder="I'm a senior fullstack website developer."></textarea>
 
             <div id={styles.box4} onClick={handleUpdate}>Confirm</div>
           </div>
