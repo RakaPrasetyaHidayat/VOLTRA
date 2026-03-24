@@ -7,16 +7,16 @@ function Profile() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
-  
+
   const [form, setForm] = useState({
-    username: "", 
-    avatar: "", 
+    username: "",
+    avatar: "",
     company: "",
     officePosition: "",
     division: "",
     bio: ""
   });
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -24,39 +24,14 @@ function Profile() {
       return;
     }
 
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch('https://voltra-be.vercel.app/api/auth/profile', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        });
+    // ✅ Ambil data dari localStorage (bukan API)
+    const savedProfile = JSON.parse(localStorage.getItem("profile"));
 
-        if (res.ok) {
-          const result = await res.json();
-          const user = result.data?.user;
-          
-          setForm({
-            username: user?.username || "",
-            avatar: user?.avatar || "/Mr_Raka.jpg",
-            company: user?.company || "",
-            officePosition: user?.officePosition || "",
-            division: user?.division || "",
-            bio: user?.bio || ""
-          });
-        } else if (res.status === 500) {
-          console.warn("Profil belum dibuat, silakan isi data baru.");
-        }
-      } catch (error) {
-        console.error("Koneksi gagal:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (savedProfile) {
+      setForm(savedProfile);
+    }
 
-    fetchProfile();
+    setLoading(false);
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -65,14 +40,6 @@ function Profile() {
 
   const handleUpdate = async () => {
     const token = localStorage.getItem("token");
-    
-    const payload = {};
-    if (form.username) payload.username = form.username;
-    if (form.avatar) payload.avatar = form.avatar;
-    if (form.company) payload.company = form.company;
-    if (form.officePosition) payload.officePosition = form.officePosition;
-    if (form.division) payload.division = form.division;
-    if (form.bio) payload.bio = form.bio;
 
     try {
       const res = await fetch('https://voltra-be.vercel.app/api/auth/profile', {
@@ -81,30 +48,40 @@ function Profile() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          username: form.username,
+          avatar: form.avatar,
+          company: form.company || "Unknown",
+          officePosition: form.officePosition || "Unknown",
+          division: form.division || "Unknown",
+          bio: form.bio || "-"
+        })
       });
 
+      const result = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || "Server Error 500");
+        throw new Error(result.message || "Server Error");
       }
 
-      // --- KODE INSERT MULAI DI SINI ---
-      const result = await res.json();
       const user = result.data?.user;
 
-      setForm({
+      const updatedForm = {
         username: user?.username || "",
-        avatar: user?.avatarUrl || "/Mr_Raka.jpg",
+        avatar: user?.avatar || "/Mr_Raka.jpg",
         company: user?.company || "",
         officePosition: user?.officePosition || "",
         division: user?.division || "",
         bio: user?.bio || ""
-      });
+      };
+
+      // ✅ Simpan ke localStorage
+      localStorage.setItem("profile", JSON.stringify(updatedForm));
+
+      setForm(updatedForm);
 
       alert("Profile updated successfully!");
       setIsEditingName(false);
-      // --- KODE INSERT SELESAI DI SINI ---
 
     } catch (err) {
       console.error("Update failed:", err.message);
@@ -151,29 +128,64 @@ function Profile() {
                     onBlur={() => setIsEditingName(false)}
                   />
                 ) : (
-                  <span className={styles.text_truncate}>{form.username || "Username"}</span>
+                  <span className={styles.text_truncate}>
+                    {form.username || "Username"}
+                  </span>
                 )}
               </h2>
               {!isEditingName && (
-                <i className="fa-regular fa-pen-to-square" id={styles.edit_username} onClick={() => setIsEditingName(true)}></i>
+                <i
+                  className="fa-regular fa-pen-to-square"
+                  id={styles.edit_username}
+                  onClick={() => setIsEditingName(true)}
+                ></i>
               )}
             </div>
           </div>
 
           <div id={styles.box3}>
             <label className={styles.label_profile}>Company</label>
-            <input type="text" name="company" className={styles.input_profile} value={form.company} onChange={handleChange} placeholder="PT. IT Solusindo"/>
+            <input
+              type="text"
+              name="company"
+              className={styles.input_profile}
+              value={form.company}
+              onChange={handleChange}
+              placeholder="PT. IT Solusindo"
+            />
 
             <label className={styles.label_profile}>Office Position</label>
-            <input type="text" name="officePosition" className={styles.input_profile} value={form.officePosition} onChange={handleChange} placeholder="IT Manager"/>
+            <input
+              type="text"
+              name="officePosition"
+              className={styles.input_profile}
+              value={form.officePosition}
+              onChange={handleChange}
+              placeholder="IT Manager"
+            />
 
             <label className={styles.label_profile}>Division</label>
-            <input type="text" name="division" className={styles.input_profile} value={form.division} onChange={handleChange} placeholder="Software Development"/>
+            <input
+              type="text"
+              name="division"
+              className={styles.input_profile}
+              value={form.division}
+              onChange={handleChange}
+              placeholder="Software Development"
+            />
 
             <label className={styles.label_profile}>Bio</label>
-            <textarea name="bio" id={styles.bio} value={form.bio} onChange={handleChange} placeholder="I'm a senior fullstack website developer."></textarea>
+            <textarea
+              name="bio"
+              id={styles.bio}
+              value={form.bio}
+              onChange={handleChange}
+              placeholder="I'm a senior fullstack website developer."
+            ></textarea>
 
-            <div id={styles.box4} onClick={handleUpdate}>Confirm</div>
+            <div id={styles.box4} onClick={handleUpdate}>
+              Confirm
+            </div>
           </div>
         </div>
       </div>
