@@ -1,0 +1,11 @@
+.env
+vercel.json
+node_modules/
+dist
+ApiDocumentation.md
+.zenflow/
+.zencoder/
+.vercel/
+scripts/
+.vercel
+.env*.local
