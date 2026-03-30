@@ -18,7 +18,6 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
-import dots from "../../assets/triple-dots.svg";
 
 function Home() {
 return (
