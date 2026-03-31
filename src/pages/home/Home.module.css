@@ -22,6 +22,12 @@ body {
     font-family: figtree;
 }
 
+.container {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
 
 #pages {
     display: flex;
