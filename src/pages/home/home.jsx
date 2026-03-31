@@ -1,13 +1,9 @@
-import IconText from "../../components/Icon/Icon1.jsx";
 import styles from "./Home.module.css";
 import search from "../../assets/search.svg";
 import home from "../../assets/home.svg";
 import task from "../../assets/task.svg";
 import notes from "../../assets/notes.svg";
-import plus from "../../assets/plus.svg";
 import notif from "../../assets/notification.svg";
-import setting from "../../assets/setting.svg";
-import icon from "../../assets/icon.svg";
 import exit from "../../assets/exit.svg";
 import quicknotes from "../../assets/quick-notes.svg";
 import clock from "../../assets/clock.svg";
@@ -18,41 +14,12 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
-
+import Sidebar from "../../components/Sidebar/Sidebar.jsx";
 function Home() {
 return (
 
     <div className={styles.container}>
-        <div id={styles.sidebar}>
-            <div id={styles.sidebarTop}>
-        <IconText />
-        <nav>
-            <ul>
-                <li><img src={search} alt="Search" style={{ width: "25px"}} />Search</li>
-                <li><img src={home} alt="Home" style={{ width: "25px" }} />Home</li>
-                 <li><img src={notes} alt="Notes" style={{ width: "25px" }} />Notes</li>
-                <li><img src={task} alt="Task" style={{ width: "25px" }} />Task</li>
-            </ul>
-        </nav>
-        </div>
-       
-        <div id={styles.sidebarMain}>
-            <ul>
-                <li>Private</li>
-                <li><span><img src={plus} alt="Create Team" style={{ width: "25px" }} />Create New</span></li>
-                <li>Team</li>
-                <li><span><img src={plus} alt="Join Team" style={{ width: "25px" }} />Join Team</span></li>
-                <li>Team Room</li>
-            </ul>
-        </div>
-        <div id={styles.sidebarBottom}>
-            <ul>
-                <li><img src={notif} alt="Notification" style={{ width: "25px"}} />Notification</li>
-                <li><img src={setting} alt="Setting" style={{ width: "25px"}} />Setting</li>
-                <li><img src={icon} alt="Profile" style={{ width: "35px"}} />Profile</li>
-            </ul>
-        </div>
-        </div>
+        <Sidebar />
         <div id={styles.mainContent}>
           <div id={styles.pages}>
             <ul>
