@@ -1,9 +1,12 @@
-body {
-    background: linear-gradient(
+:root {
+    --background-color:  linear-gradient(
     to top right,
     #999999 50%,
     #ffffff 100%
     );
+}
+body {
+   
     background-position: center;
     background-size: cover;
     background-attachment: fixed;
@@ -12,6 +15,7 @@ body {
 }
 .container {
   font-family: "Figtree";
+  background: var(--background-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,9 +28,7 @@ body {
     background-color: #0F172A;
     border-radius: 30px;
     display: inline-block;
-    min-width: 400px;
     width: 600px;
-    min-height: 400px;
     height: 450px;
     color: white;
 }
@@ -224,7 +226,7 @@ body {
     position: relative;
 }
 
-@media (max-width: 480px){
+@media (max-width: 600px){
     body {
     overflow-x: hidden;
     }
