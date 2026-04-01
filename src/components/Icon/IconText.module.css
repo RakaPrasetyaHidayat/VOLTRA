@@ -2,17 +2,15 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  margin: 12px;
 }
 
 .icon h2 {
   font-size: 20px;
+  color: #0F172A;
 }
 
 #img {
-  min-width: 25px;
   width:25px;
-  max-width:50px;
-  min-height: 25px;
   height:25px;
-  max-height: 50px;
 }

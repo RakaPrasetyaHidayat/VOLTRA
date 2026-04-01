@@ -15,6 +15,7 @@ import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
 import Sidebar from "../../components/Sidebar/Sidebar.jsx";
+
 function Home() {
 return (
 
