@@ -28,6 +28,10 @@ body {
     grid-template-columns: auto 1fr;
 }
 
+#mainContent {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
 #pages {
     display: flex;
     flex-direction: row;
