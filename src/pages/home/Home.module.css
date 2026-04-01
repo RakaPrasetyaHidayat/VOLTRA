@@ -32,39 +32,6 @@ body {
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
-#pages {
-    display: flex;
-    flex-direction: row;
-    height: 30px;
-    padding-left: 12px;
-    padding-top: 8px;
-}
-
-#pages ul {
-    padding: 0px;
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-}
-
-#pages li {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    width: 120px;
-    gap: 8px;
-    transform: skewX(-20deg); 
-    border-right: 1px solid var(--secondary-color);
-}
-
-#pages li span {
-    display: flex;
-    flex-direction: row;
-    max-width: 120px;
-    align-items: center;
-    gap: 8px;
-    transform: skewX(20deg);
-}
 
 #project {
     display: flex;

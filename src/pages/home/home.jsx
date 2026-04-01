@@ -1,10 +1,5 @@
 import styles from "./Home.module.css";
 import search from "../../assets/search.svg";
-import home from "../../assets/home.svg";
-import task from "../../assets/task.svg";
-import notes from "../../assets/notes.svg";
-import notif from "../../assets/notification.svg";
-import exit from "../../assets/exit.svg";
 import quicknotes from "../../assets/quick-notes.svg";
 import clock from "../../assets/clock.svg";
 import todoList from "../../assets/todo-list.svg";
@@ -15,21 +10,14 @@ import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
 import Sidebar from "../../components/Sidebar/Sidebar.jsx";
-
+import Tab from "../../components/Tab/Tab.jsx";
 function Home() {
 return (
 
     <div className={styles.container}>
         <Sidebar />
         <div id={styles.mainContent}>
-          <div id={styles.pages}>
-            <ul>
-                <li style={{transform: "skewX(180deg)"}}><span  style={{transform: "skewX(180deg)"}}><img src={home} alt="Home" style={{ width: "20px" }}/>Home </span></li>
-                <li><span><img src={notes} alt="Notes" style={{ width: "20px" }} />Notes </span> <img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "10px" }} /></li>
-                <li><span><img src={notif} alt="Notification" style={{ width: "20px"}} />Notif...</span> <img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "8px" }} /></li>
-                <li><span><img src={task} alt="Task" style={{ width: "20px" }} />Task</span><img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "20px" }} /></li>
-            </ul>
-          </div>
+          <Tab />
           <div id={styles.project}>
             <div id={styles.projectHeader}>
               <h1>Your Project</h1>
