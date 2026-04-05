@@ -26,7 +26,7 @@ function App() {
     if (token && (path === "/login" || path === "/registration")) {
       navigate("/home");
     }
-    }, [location.pathname]);
+    }, [location.pathname, navigate]);
   return (
     <TabProvider>
       <Routes>
