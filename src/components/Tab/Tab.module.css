@@ -4,13 +4,14 @@
 #pages {
     display: flex;
     flex-direction: row;
-    padding: 12px;
+    padding: 10px;
 }
 #pages ul {
     padding: 0px;
     display: flex;
     flex-direction: row;
     gap: 12px;
+    cursor: pointer;
 }
 
 .tabItem {
@@ -28,6 +29,7 @@
     display: flex;
     align-items: center;
     width: 120px;
+    padding: 8px;
     gap: 8px;
     transform: skewX(0deg); 
     border-right: 1px solid var(--secondary-color);

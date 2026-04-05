@@ -1,6 +1,5 @@
 * {
     margin: 0;
-    
 }
 
 #sidebar {
@@ -26,6 +25,7 @@
     padding: 0px;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 #sidebarTop li {
     list-style: none;
@@ -55,6 +55,7 @@ nav {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    cursor: pointer;
     width: 100%;
 }
 
@@ -81,6 +82,7 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    cursor: pointer;
     gap: 12px;
     width: 100%;
 }

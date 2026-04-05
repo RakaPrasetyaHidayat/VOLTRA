@@ -5,7 +5,6 @@ import styles from "./Profile.module.css";
 
 function Profile() {
   const navigate = useNavigate();
-  const [setLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
 
   const [form, setForm] = useState({
@@ -31,7 +30,6 @@ function Profile() {
       setForm(savedProfile);
     }
 
-    setLoading(false);
   }, [navigate]);
 
   const handleChange = (e) => {
