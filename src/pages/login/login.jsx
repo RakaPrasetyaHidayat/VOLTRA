@@ -3,6 +3,7 @@ import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Login.module.css";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
+import { useEffect } from "react";
 
 function Login() {
   const navigate = useNavigate();

@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation} from "react-router-dom";
+import { useEffect } from "react";
 import { TabProvider } from "./components/Tab/TabContext";
 
 import Login from "./pages/login/login";
@@ -8,16 +9,34 @@ import Registration from "./pages/registration/registration";
 import LayoutWithTab from "./layouts/LayoutWithTab";
 
 function App() {
+   const navigate = useNavigate();
+   const location = useLocation();
+
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token") ||
+      sessionStorage.getItem("token");
+
+    const path = location.pathname;
+
+    if (!token && path !== "/login" && path !== "/registration") {
+      navigate("/login");
+    }
+
+    if (token && (path === "/login" || path === "/registration")) {
+      navigate("/home");
+    }
+    }, [location.pathname]);
   return (
     <TabProvider>
       <Routes>
-        {/* ❌ TANPA TAB */}
+       
         <Route path="/" element={<Registration />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/registration" element={<Registration />} />
 
-        {/* ✅ DENGAN TAB */}
+        
         <Route path="/*" element={<LayoutWithTab />} />
       </Routes>
     </TabProvider>
