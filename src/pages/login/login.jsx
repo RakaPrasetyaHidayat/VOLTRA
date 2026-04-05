@@ -39,7 +39,6 @@ function Login() {
     );
 
     const data = await res.json();
-    console.log("Login response:", data);
 
     if (res.ok) {
       alert("Login berhasil!");
@@ -54,6 +53,13 @@ function Login() {
 
       navigate("/home");
     } else {
+      const msg = data.message?.toLowerCase();
+
+      if (msg?.includes("invalid credential")) {
+        alert("Akun tidak ditemukan atau password salah. Silakan daftar atau cek password.");
+        return;
+      }
+
       alert(data.message || "Login gagal");
     }
   } catch (err) {
@@ -115,7 +121,7 @@ function Login() {
 
         <div className={styles.footer_text}>
           Don’t have an account?{" "}
-          <Link to="/register">Sign up</Link>
+          <Link to="/registration">Sign up</Link>
         </div>
       </div>
 

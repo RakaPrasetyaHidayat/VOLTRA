@@ -11,7 +11,6 @@ import LayoutWithTab from "./layouts/LayoutWithTab";
 function App() {
    const navigate = useNavigate();
    const location = useLocation();
-
   useEffect(() => {
     const token =
       localStorage.getItem("token") ||

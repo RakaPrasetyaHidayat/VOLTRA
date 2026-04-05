@@ -6,6 +6,7 @@ import { useState } from "react";
 
 function Registration() {
   const navigate = useNavigate();
+  const [agreed, setAgreed] = useState(false);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -35,7 +36,10 @@ function Registration() {
     if (!form.email.includes("@")) return alert("Email tidak valid!");
     if (form.password.length < 6) return alert("Password minimal 6 karakter!");
     if (form.password !== form.confirmPassword) return alert("Password tidak sama!");
-
+    if (!agreed) {
+    alert("Kamu harus menyetujui Terms of Service!");
+    return;
+    }
     try {
       const res = await fetch(
         "https://voltra-be.vercel.app/api/auth/register",
@@ -57,14 +61,16 @@ function Registration() {
         throw new Error(data.message || "Register gagal");
       }
 
-      alert("Register berhasil!");
-
       // ✅ Simpan profile awal ke localStorage
       const email = form.email.trim();
-      const profileKey = `profile_${email}`;
-
       localStorage.setItem("userEmail", email);
 
+      if (data.data?.token) {
+        localStorage.setItem("token", data.data.token);
+      }
+
+      const profileKey = `profile_${email}`;
+      
       localStorage.setItem(profileKey, JSON.stringify({
       username: form.username.trim(),
       avatar: "/Mr_Raka.jpg",
@@ -74,8 +80,8 @@ function Registration() {
       bio: ""
       }));
 
-      alert("Register berhasil! Silakan login.");
-      navigate("/login");
+      alert("Register berhasil!");
+      navigate("/profile");
 
     } catch (error) {
       console.error("Register error:", error.message);
@@ -136,7 +142,7 @@ function Registration() {
 
         <div className={styles.row}>
           <label className={styles.remember}>
-            <input type="checkbox" id="checkbox" /> I agree all statements in Terms of Service
+            <input type="checkbox" id="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)}/> I agree all statements in Terms of Service
           </label>
         </div>
 
