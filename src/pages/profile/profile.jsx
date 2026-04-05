@@ -5,6 +5,12 @@ import styles from "./Profile.module.css";
 
 function Profile() {
   const navigate = useNavigate();
+
+  const email =
+  localStorage.getItem("userEmail") ||
+  sessionStorage.getItem("userEmail");
+  const profileKey = email ? `profile_${email}` : null;
+
   const [isEditingName, setIsEditingName] = useState(false);
 
   const [form, setForm] = useState({
@@ -17,20 +23,25 @@ function Profile() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const token =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+
+    if (!token || !email || !profileKey) {
       navigate("/login");
       return;
     }
 
-    // ✅ Ambil data dari localStorage (bukan API)
-    const savedProfile = JSON.parse(localStorage.getItem("profile"));
+    try {
+      const saved = JSON.parse(localStorage.getItem(profileKey));
 
-    if (savedProfile) {
-      setForm(savedProfile);
+      if (saved) {
+        setForm(saved);
+      }
+    } catch (err) {
+      console.log("Profile parse error:", err);
     }
-
-  }, [navigate]);
+  }, [navigate, email, profileKey]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,53 +50,34 @@ function Profile() {
   const handleUpdate = async () => {
     const token = localStorage.getItem("token");
 
-    try {
-      const res = await fetch('https://voltra-be.vercel.app/api/auth/profile', {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          username: form.username,
-          avatar: form.avatar,
-          company: form.company || "Unknown",
-          officePosition: form.officePosition || "Unknown",
-          division: form.division || "Unknown",
-          bio: form.bio || "-"
-        })
-      });
+    const res = await fetch("https://voltra-be.vercel.app/api/auth/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(form)
+    });
 
-      const result = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(result.message || "Server Error");
-      }
+    const result = await res.json();
 
-      const user = result.data?.user;
-
-      const updatedForm = {
-        username: user?.username || "",
-        avatar: user?.avatar || "/Mr_Raka.jpg",
-        company: user?.company || "",
-        officePosition: user?.officePosition || "",
-        division: user?.division || "",
-        bio: user?.bio || ""
-      };
-
-      // ✅ Simpan ke localStorage
-      localStorage.setItem("profile", JSON.stringify(updatedForm));
-
-      setForm(updatedForm);
-
-      alert("Profile updated successfully!");
-      setIsEditingName(false);
-
-      navigate("/home");
-
-    } catch (err) {
-      console.error("Update failed:", err.message);
-      alert("Terjadi kesalahan saat update profile");
+    if (res.status === 401) {
+    alert("Token invalid / expired, silakan login ulang");
+    localStorage.removeItem("token");
+    navigate("/login");
+    return;
     }
+
+    const updated = result.data?.user || form;
+
+    localStorage.setItem(profileKey, JSON.stringify(updated));
+
+    setForm(updated);
+    setIsEditingName(false);
+
+    alert("Profile updated!");
+
+    navigate("/home");
   };
 
   return (

@@ -6,7 +6,6 @@ import { useState } from "react";
 
 function Registration() {
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -31,33 +30,11 @@ function Registration() {
   const handleRegister = async () => {
     const usernameRegex = /^[a-zA-Z0-9_]+$/;
 
-    // ✅ Validasi username
-    if (!form.username.trim()) {
-      alert("Username tidak boleh kosong!");
-      return;
-    }
-
-    if (!usernameRegex.test(form.username)) {
-      alert("Username hanya boleh huruf, angka, dan underscore (_)");
-      return;
-    }
-
-    // ✅ Validasi email sederhana
-    if (!form.email.includes("@")) {
-      alert("Email tidak valid!");
-      return;
-    }
-
-    // ✅ Validasi password
-    if (form.password.length < 6) {
-      alert("Password minimal 6 karakter!");
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      alert("Password tidak sama!");
-      return;
-    }
+    if (!form.username.trim()) return alert("Username tidak boleh kosong!");
+    if (!usernameRegex.test(form.username)) return alert("Username tidak valid!");
+    if (!form.email.includes("@")) return alert("Email tidak valid!");
+    if (form.password.length < 6) return alert("Password minimal 6 karakter!");
+    if (form.password !== form.confirmPassword) return alert("Password tidak sama!");
 
     try {
       const res = await fetch(
@@ -82,26 +59,23 @@ function Registration() {
 
       alert("Register berhasil!");
 
-      // ✅ Ambil token fleksibel
-      const token =
-        data.token || data?.data?.token || data.accessToken;
-
       // ✅ Simpan profile awal ke localStorage
-      localStorage.setItem("profile", JSON.stringify({
-        username: form.username,
-        avatar: "/Mr_Raka.jpg",
-        company: "",
-        officePosition: "",
-        division: "",
-        bio: ""
+      const email = form.email.trim();
+      const profileKey = `profile_${email}`;
+
+      localStorage.setItem("userEmail", email);
+
+      localStorage.setItem(profileKey, JSON.stringify({
+      username: form.username.trim(),
+      avatar: "/Mr_Raka.jpg",
+      company: "",
+      officePosition: "",
+      division: "",
+      bio: ""
       }));
 
-      if (token) {
-        localStorage.setItem("token", token);
-        navigate("/profile");
-      } else {
-        navigate("/login");
-      }
+      alert("Register berhasil! Silakan login.");
+      navigate("/login");
 
     } catch (error) {
       console.error("Register error:", error.message);

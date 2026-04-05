@@ -6,7 +6,7 @@ import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
-
+  const [remember, setRemember] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -44,7 +44,13 @@ function Login() {
     if (res.ok) {
       alert("Login berhasil!");
 
-      localStorage.setItem("token", data.token);
+      if (remember) {
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("userEmail", form.email);
+      } else {
+        sessionStorage.setItem("token", data.data.token);
+        sessionStorage.setItem("userEmail", form.email);
+      }
 
       navigate("/home");
     } else {
@@ -90,7 +96,7 @@ function Login() {
 
         <div className={styles.row}>
           <label className={styles.remember}>
-            <input type="checkbox" id="checkbox"/> Remember me
+            <input type="checkbox" id="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}/> Remember me
           </label>
           <Link to="/forgot-password" className={styles.forgot}>Forgot password?</Link>
         </div>
