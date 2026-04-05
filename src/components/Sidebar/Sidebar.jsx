@@ -46,7 +46,7 @@ function Sidebar() {
             <ul>
                 <li onClick={() => openPage("Notification", notif, "/notification")}><img src={notif} alt="Notification" style={{ width: "25px"}} />Notification</li>
                 <li><img src={setting} alt="Setting" style={{ width: "25px"}} />Setting</li>
-                <li><img src={icon} alt="Profile" style={{ width: "35px"}} />Profile</li>
+                <li onClick={() => navigate("/profile")}><img src={icon} alt="Profile" style={{ width: "35px"}} />Profile</li>
             </ul>
         </div>
         </div>
