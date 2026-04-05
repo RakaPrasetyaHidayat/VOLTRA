@@ -23,7 +23,7 @@ function App() {
       navigate("/login");
     }
 
-    if (token && (path === "/login" || path === "/registration")) {
+    if (token && (path === "/" || path === "/login" || path === "/registration")) {
       navigate("/home");
     }
     }, [location.pathname, navigate]);
@@ -31,7 +31,7 @@ function App() {
     <TabProvider>
       <Routes>
        
-        <Route path="/" element={<Registration />} />
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/registration" element={<Registration />} />
