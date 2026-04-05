@@ -1,0 +1,20 @@
+* {
+    margin: 0px;
+    border: 1px solid white;
+}
+.container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 100vh;
+}
+
+.main {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-width: 0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}

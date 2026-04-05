@@ -1,15 +1,11 @@
 * {
     margin: 0;
 }
-
 #pages {
     display: flex;
     flex-direction: row;
-    height: 30px;
-    padding-left: 12px;
-    padding-top: 8px;
+    padding: 12px;
 }
-
 #pages ul {
     padding: 0px;
     display: flex;
@@ -17,7 +13,7 @@
     gap: 12px;
 }
 
-#pages li {
+.tabItem {
     list-style: none;
     display: flex;
     align-items: center;
@@ -27,11 +23,47 @@
     border-right: 1px solid var(--secondary-color);
 }
 
-#pages li span {
+.homeTab {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    width: 120px;
+    gap: 8px;
+    transform: skewX(0deg); 
+    border-right: 1px solid var(--secondary-color);
+}
+
+.activeTab {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    width: 120px;
+    gap: 8px;
+    transform: skewX(0deg); 
+    border-right: 1px solid var(--secondary-color);
+}
+
+
+.tabContent {
     display: flex;
     flex-direction: row;
     max-width: 120px;
     align-items: center;
     gap: 8px;
+    transform: skewX(0deg);
+    overflow: hidden;
+}
+
+.anotherTab {
+    display: flex;
+    flex-direction: row;
+    max-width: 120px;
+    align-items: center;
+    gap: 8px;
+    transform: skewX(20deg);
+    overflow: hidden;
+}
+
+.exitBtn {
     transform: skewX(20deg);
 }

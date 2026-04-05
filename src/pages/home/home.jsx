@@ -9,15 +9,11 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
-import Tab from "../../components/Tab/Tab.jsx";
 function Home() {
 return (
 
     <div className={styles.container}>
-        <Sidebar />
         <div id={styles.mainContent}>
-          <Tab />
           <div id={styles.project}>
             <div id={styles.projectHeader}>
               <h1>Your Project</h1>
@@ -75,35 +71,35 @@ return (
                         <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
                         <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
                         <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"25px"}/><b>UI/UX</b></div></div>
+                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
                     {/* Row 2 */}
                         <div className={styles.firtColumn}><label><b>Teks</b></label></div>
                         <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
                         <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
                         <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
                         <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"25px"}/><b>Frontend</b></div></div>
+                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
                     {/* Row 3 */}
                         <div className={styles.firtColumn}><label><b>Teks</b></label></div>
                         <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
                         <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
                         <div className={styles.updatesMainContent}><div className={styles.statusInProgress}><b>In Progress</b></div></div>
                         <div className={styles.updatesMainContent}><div className={styles.priorityHigh}><b>High</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.backendCategory}><img src={backend} alt="Backend" width={"25px"}/><b>Backend</b></div></div>
+                        <div className={styles.lastColumn}><div className={styles.backendCategory}><img src={backend} alt="Backend" width={"20px"}/><b>Backend</b></div></div>
                     {/* Row 4 */}
                         <div className={styles.firtColumn}><label><b>Teks</b></label></div>
                         <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
                         <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
                         <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
                         <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"25px"}/><b>Frontend</b></div></div>
+                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
                     {/* Row 5 */}
                         <div className={styles.firtColumn}><label><b>Teks</b></label></div>
                         <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
                         <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
                         <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
                         <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"25px"}/><b>UI/UX</b></div></div>
+                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
                 </div>  
           </div>
         </div>   

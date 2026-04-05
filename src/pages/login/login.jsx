@@ -46,7 +46,7 @@ function Login() {
 
       localStorage.setItem("token", data.token);
 
-      navigate("");
+      navigate("/home");
     } else {
       alert(data.message || "Login gagal");
     }

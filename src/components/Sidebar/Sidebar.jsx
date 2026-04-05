@@ -8,8 +8,17 @@ import task from "../../assets/task.svg";
 import notes from "../../assets/notes.svg";
 import notif from "../../assets/notification.svg";
 import styles from "./Sidebar.module.css";
+import { useTab } from "../../components/Tab/TabContext";
+import { useNavigate } from "react-router-dom";
 
 function Sidebar() {
+    const { addTab } = useTab();
+    const navigate = useNavigate();
+
+    const openPage = (name, icon, path) => {
+    addTab(name, icon);
+    navigate(path);
+    };
     return (
         <div id={styles.sidebar}>
             <div id={styles.sidebarTop}>
@@ -17,9 +26,9 @@ function Sidebar() {
         <nav>
             <ul>
                 <li><img src={search} alt="Search" style={{ width: "25px"}} />Search</li>
-                <li><img src={home} alt="Home" style={{ width: "25px" }} />Home</li>
-                 <li><img src={notes} alt="Notes" style={{ width: "25px" }} />Notes</li>
-                <li><img src={task} alt="Task" style={{ width: "25px" }} />Task</li>
+                <li onClick={() => openPage("Home", home, "/home")}><img src={home} alt="Home" style={{ width: "25px" }} />Home</li>
+                 <li onClick={() => openPage("Notes", notes, "/note")}><img src={notes} alt="Notes" style={{ width: "25px" }} />Notes</li>
+                <li onClick={() => openPage("Task", task, "/task")}><img src={task} alt="Task" style={{ width: "25px" }} />Task</li>
             </ul>
         </nav>
         </div>
@@ -35,7 +44,7 @@ function Sidebar() {
         </div>
         <div id={styles.sidebarBottom}>
             <ul>
-                <li><img src={notif} alt="Notification" style={{ width: "25px"}} />Notification</li>
+                <li onClick={() => openPage("Notification", notif, "/notification")}><img src={notif} alt="Notification" style={{ width: "25px"}} />Notification</li>
                 <li><img src={setting} alt="Setting" style={{ width: "25px"}} />Setting</li>
                 <li><img src={icon} alt="Profile" style={{ width: "35px"}} />Profile</li>
             </ul>

@@ -59,7 +59,6 @@ function Profile() {
       });
 
       const result = await res.json().catch(() => ({}));
-
       if (!res.ok) {
         throw new Error(result.message || "Server Error");
       }
@@ -83,13 +82,13 @@ function Profile() {
       alert("Profile updated successfully!");
       setIsEditingName(false);
 
+      navigate("/home");
+
     } catch (err) {
       console.error("Update failed:", err.message);
       alert("Terjadi kesalahan saat update profile");
     }
   };
-
-  if (loading) return <div className={styles.loading}>Loading...</div>;
 
   return (
     <div className={styles.container}>

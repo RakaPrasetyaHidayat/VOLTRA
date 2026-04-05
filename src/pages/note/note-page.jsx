@@ -1,15 +1,11 @@
 import styles from "./Note.module.css";
 import search from "../../assets/search.svg";
 import whitePlus from "../../assets/white-plus.svg";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
-import Tab from "../../components/Tab/Tab.jsx";
 
 function Note() {
     return (
         <div className={styles.container}>
-            <Sidebar />
             <div className={styles.mainContent}>
-                <Tab />
                 <div id={styles.notes}>
                     <div id={styles.notesHead}>
                         <h1>All Notes:</h1>

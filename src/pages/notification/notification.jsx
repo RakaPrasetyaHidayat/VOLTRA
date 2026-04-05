@@ -6,9 +6,7 @@ import Tab from "../../components/Tab/Tab.jsx";
 function Notification() {
     return (
         <div className={styles.container}>
-            <Sidebar />
             <div className={styles.mainContent}>
-                <Tab />
                 <div id={styles.notification}>
                         <h1>Your Checkbox: </h1>
                         <div id={styles.notifItem}>

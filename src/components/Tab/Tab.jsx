@@ -1,21 +1,74 @@
+import { useTab } from "./TabContext";
+import { useNavigate } from "react-router-dom";
 import styles from "./Tab.module.css";
-import home from "../../assets/home.svg";
-import task from "../../assets/task.svg";
-import notes from "../../assets/notes.svg";
-import notif from "../../assets/notification.svg";
 import exit from "../../assets/exit.svg";
+function Tab() {
+  const { tabs, activeTab, closeTab, setActiveTab, setTabs } = useTab();
+  const navigate = useNavigate();
 
-function Tab(){
-    return(
-        <div id={styles.pages}>
-            <ul>
-                <li style={{transform: "skewX(180deg)"}}><span  style={{transform: "skewX(180deg)"}}><img src={home} alt="Home" style={{ width: "20px" }}/>Home </span></li>
-                <li><span><img src={notes} alt="Notes" style={{ width: "20px" }} />Notes </span> <img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "10px" }} /></li>
-                <li><span><img src={notif} alt="Notification" style={{ width: "20px"}} />Notif...</span> <img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "8px" }} /></li>
-                <li><span><img src={task} alt="Task" style={{ width: "20px" }} />Task</span><img src={exit} alt="Exit" style={{ width: "30px", transform: "skewX(20deg)", position: "relative", left: "20px" }} /></li>
-            </ul>
-          </div>
-    )
+  const routeMap = {
+    Home: "/home",
+    Notes: "/note",
+    Task: "/task",
+    Notification: "/notification"
+  };
+
+ const switchTab = (tab) => {
+  // 🔥 kalau Home → cukup navigate
+  if (tab.name === "Home") {
+    setActiveTab(tab.id);
+    navigate(routeMap[tab.name]);
+    return;
+  }
+
+  setActiveTab(tab.id);
+
+  const homeTab = tabs.find(t => t.name === "Home");
+  const otherTabs = tabs.filter(t => t.name !== "Home" && t.id !== tab.id);
+
+  setTabs([homeTab, tab, ...otherTabs]);
+
+  navigate(routeMap[tab.name]);
+  };
+
+  return (
+    <div id={styles.pages}>
+    <ul>
+      {tabs.map((tab) => (
+        <li
+          key={tab.id}
+          onClick={() => switchTab(tab)}
+          className={`
+          ${styles.tabItem}
+          ${tab.name === "Home" ? styles.homeTab : ""}
+          ${tab.id === activeTab ? styles.activeTab : ""}
+          `}
+        >
+          <span 
+            className={`
+            ${styles.tabContent}
+            ${tab.id !== activeTab && tab.name !== "Home" ? styles.anotherTab : ""}
+            `}>
+            <img src={tab.icon} style={{ width: "20px" }} alt="Icon"/>
+            {tab.name}
+          </span>
+
+          {tab.name !== "Home" && (
+            <img
+              src={exit}
+              className={tab.id !== activeTab ? styles.exitBtn : ""}
+              alt="Exit"
+              onClick={(e) => {
+                e.stopPropagation();
+                closeTab(tab.id);
+              }}
+            />
+          )}
+        </li>
+      ))}
+    </ul>
+    </div>
+  );
 }
 
 export default Tab;

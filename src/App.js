@@ -1,24 +1,27 @@
 import { Routes, Route } from "react-router-dom";
+import { TabProvider } from "./components/Tab/TabContext";
+
 import Login from "./pages/login/login";
 import Profile from "./pages/profile/profile";
 import Registration from "./pages/registration/registration";
-import Home from "./pages/home/home";
-import Note from "./pages/note/note-page";
-import Notification from "./pages/notification/notification";
+
+import LayoutWithTab from "./layouts/LayoutWithTab";
 
 function App() {
-    return (
-        <Routes>
-        <Route path="/" element={<Profile />} />
+  return (
+    <TabProvider>
+      <Routes>
+        {/* ❌ TANPA TAB */}
+        <Route path="/" element={<Registration />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/register" element={<Registration />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/note" element={<Note />} />
-        <Route path="/notification" element={<Notification />} />
-        </Routes>
-       
-    );
+        <Route path="/registration" element={<Registration />} />
+
+        {/* ✅ DENGAN TAB */}
+        <Route path="/*" element={<LayoutWithTab />} />
+      </Routes>
+    </TabProvider>
+  );
 }
 
 export default App;
