@@ -1,7 +1,5 @@
 import styles from "./Notification.module.css";
 import icon from "../../assets/icon.svg";
-import Sidebar from "../../components/Sidebar/Sidebar.jsx";
-import Tab from "../../components/Tab/Tab.jsx";
 
 function Notification() {
     return (

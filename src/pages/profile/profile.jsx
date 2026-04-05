@@ -5,7 +5,7 @@ import styles from "./Profile.module.css";
 
 function Profile() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [setLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
 
   const [form, setForm] = useState({
