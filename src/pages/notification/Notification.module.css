@@ -32,7 +32,7 @@ img {
     gap: 20px;
     padding: 12px 20px;
     border-radius: 10px;
-    background-color: var(--gray);
+    background-color: var(--dark-blue);
 }
 
 .item .boxItem {

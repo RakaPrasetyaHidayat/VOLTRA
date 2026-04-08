@@ -6,11 +6,12 @@
     --main-color: #0F172A;
     --secondary-color: #ffffff;
     --blue: #0000FF;
-    --red: #FF0000;
-    --yellow: #FFFF00;
-    --green: #00FF1E;
-    --pink: #FF007B;
-    --gray: #2A2A2D;
+    --toDo: #5355CD;
+    --progress: #483F79;
+    --low: #777EF9;
+    --high: #4E4EAE;
+    --frontend: #3D2CFA;
+    --dark-blue: #131342;
 }
 
 body {
@@ -99,7 +100,7 @@ body {
 
 #updatesContent {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto auto auto;
+    grid-template-columns: 400px auto auto auto auto auto;
     row-gap: 2px;
     grid-template-rows: auto auto auto auto auto auto;
 }
@@ -117,47 +118,61 @@ body {
     background-color: var(--blue);
     border-radius: 20px;
     display: flex;
+    align-items: center;
     justify-content: center;
     opacity: 0.5;
-    width: 60px;
+    width: 100%;
 }
 
-.statusToDo, .priorityHigh {
-    background-color: var(--red);
+.statusToDo  {
+    background-color: var(--toDo);
     border-radius: 20px;
     display: flex;
+    align-items: center;
     justify-content: center;
     opacity: 0.5;
-    width: 60px;
+    width: 100%;
+}
+
+.priorityHigh {
+    background-color: var(--high);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+    width: 100%;
 }
 
 .statusInProgress, .priorityMedium{
-    background-color: var(--yellow);
+    background-color: var(--progress);
     border-radius: 20px;
     display: flex;
+    align-items: center;
     justify-content: center;
     opacity: 0.5;
-    width: auto;
+    width: 100%;
 }
 
 .priorityLow {
-    background-color: var(--green);
+    background-color: var(--low);
     border-radius: 20px;
     display: flex;
+    align-items: center;
     justify-content: center;
     opacity: 0.5;
-    width: 60px;
+    width: 100%;
 }
 
 .frontendCategory {
-    background-color: var(--pink);
+    background-color: var(--frontend);
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0.5;
     height: 30px;
-    width: 100px;
+    width: 100%;
 }
 
 .UIUXCategory {
@@ -167,17 +182,17 @@ body {
     justify-content: center;
     opacity: 0.5;
     height: 30px;
-    width: 100px;
+    width: 100%;
 }
 
 .backendCategory {
-    background-color: var(--red);
+    background-color: var(--high);
     border-radius: 20px;
     display: flex;
     justify-content: center;
     opacity: 0.5;
     height: 30px;
-    width: 100px;
+    width: 100%;
 }
 
 .updatesMainContent {
@@ -185,7 +200,7 @@ body {
     flex-direction: row;
     align-items: center;
     gap: 8px;
-    background-color: var(--gray);
+    background-color: var(--dark-blue);
     border: 1px solid var(--secondary-color);
 }
 
@@ -196,7 +211,7 @@ body {
     gap: 8px;
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
-    background-color: var(--gray);
+    background-color: var(--dark-blue);
     border: 1px solid var(--secondary-color);
 }
 
@@ -207,6 +222,6 @@ body {
     gap: 8px;
     border-top-right-radius: 12px;
     border-bottom-right-radius: 12px;
-    background-color: var(--gray);
+    background-color: var(--dark-blue);
     border: 1px solid var(--secondary-color);
 }

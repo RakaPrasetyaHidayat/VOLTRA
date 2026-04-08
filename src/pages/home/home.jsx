@@ -57,8 +57,8 @@ return (
                 </div>
                 <div id={styles.updatesContent}>
                     {/*Table Header*/}
-                        <div><label><b>Idea</b></label></div>
-                        <div><label><b>DD/MM/YY</b></label></div>
+                        <div><label><b>Task Title</b></label></div>
+                        <div><label><b>Deadline</b></label></div>
                         <div><label><b>People</b></label></div>
                         <div><label><b>Status</b></label></div>
                         <div><label><b>Priority</b></label></div>
