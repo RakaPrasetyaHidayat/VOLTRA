@@ -9,7 +9,32 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
+import { useState } from "react";
 function Home() {
+    function handleCreateTask() {
+  const newTask = {
+    id: Date.now(),
+    title: "New Task",
+    date: "7/7/2026",
+    name: "User",
+    status: "To Do",
+    priority: "Medium",
+    category: "Frontend"
+  };
+
+  setTasks([...tasks, newTask]);
+}
+    const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      title: "Teks",
+      date: "6/7/2026",
+      name: "Name",
+      status: "Done",
+      priority: "Low",
+      category: "UIUX"
+    }
+  ]);
 return (
 
     <div className={styles.container}>
@@ -53,7 +78,7 @@ return (
                 <div id={styles.utilities}>
                     <span><img src={search} alt="Search" style={{width: "25px"}}/>Search</span>
                     <span><img src={filter} alt="Filter" style={{width: "25px"}}/>Filter</span>
-                    <span><img src={whitePlus} alt="New" style={{width: "25px"}}/>New</span>
+                    <span onClick={handleCreateTask} style={{cursor: "pointer"}}><img src={whitePlus} />New</span>
                 </div>
                 <div id={styles.updatesContent}>
                     {/*Table Header*/}
@@ -63,43 +88,41 @@ return (
                         <div><label><b>Status</b></label></div>
                         <div><label><b>Priority</b></label></div>
                         <div><label><b>Category</b></label></div>
-                   {/*Table Content
-                        Row 1
-                    */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
-                    {/* Row 2 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
-                    {/* Row 3 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusInProgress}><b>In Progress</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityHigh}><b>High</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.backendCategory}><img src={backend} alt="Backend" width={"20px"}/><b>Backend</b></div></div>
-                    {/* Row 4 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
-                    {/* Row 5 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
+                        {tasks.map((task) => (
+  <>
+    <div className={styles.firtColumn}>
+      <label><b>{task.title}</b></label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <label>{task.date}</label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <img src={account} width="25px" />
+      <label><b>{task.name}</b></label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <div className={styles.statusToDo}>
+        <b>{task.status}</b>
+      </div>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <div className={styles.priorityMedium}>
+        <b>{task.priority}</b>
+      </div>
+    </div>
+
+    <div className={styles.lastColumn}>
+      <div className={styles.frontendCategory}>
+        <img src={frontend} width="20px" />
+        <b>{task.category}</b>
+      </div>
+    </div>
+  </>
+))}
                 </div>  
           </div>
         </div>   
