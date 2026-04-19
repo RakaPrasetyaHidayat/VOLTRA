@@ -9,6 +9,7 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
+import { click } from "@testing-library/user-event/dist/click";
 function Home() {
 return (
 
@@ -53,10 +54,11 @@ return (
                 <div id={styles.utilities}>
                     <span><img src={search} alt="Search" style={{width: "25px"}}/>Search</span>
                     <span><img src={filter} alt="Filter" style={{width: "25px"}}/>Filter</span>
-                    <span><img src={whitePlus} alt="New" style={{width: "25px"}}/>New</span>
+                    <span id={styles.createNew}><img src={whitePlus} alt="New" style={{width: "25px"}}/>New</span>
                 </div>
                 <div id={styles.updatesContent}>
                     {/*Table Header*/}
+                   
                         <div><label><b>Task Title</b></label></div>
                         <div><label><b>Deadline</b></label></div>
                         <div><label><b>People</b></label></div>
