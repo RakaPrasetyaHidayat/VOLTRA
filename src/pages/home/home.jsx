@@ -9,8 +9,65 @@ import account from "../../assets/account.svg";
 import backend from "../../assets/backend.svg";
 import frontend from "../../assets/frontend.svg";
 import UIUX from "../../assets/UIUX.svg";
-import { click } from "@testing-library/user-event/dist/click";
+import { useState } from "react";
 function Home() {
+    function handleCreateTask() {
+      const newTask = {
+        id: Date.now(),
+        title: "Task",
+        date: "2026-07-07",
+        name: "User",
+        status: "To Do",
+        priority: "High",
+        category: "Frontend"
+      };
+
+      setTasks([...tasks, newTask]);
+    }
+    function getCategoryIcon(category) {
+      if (category === "Frontend") return frontend;
+      if (category === "Backend") return backend;
+      if (category === "UI/UX") return UIUX;
+    }
+    function getStatusClass(status) {
+      if (status === "Done") return styles.statusDone;
+      return styles.statusToDo;
+    }
+
+    function getPriorityClass(priority) {
+      if (priority === "High") return styles.priorityHigh;
+      if (priority === "Medium") return styles.priorityMedium;
+      return styles.priorityLow;
+    }
+
+    function getCategoryClass(category) {
+      if (category === "Frontend") return styles.frontendCategory;
+      if (category === "Backend") return styles.backendCategory;
+      if (category === "UI/UX") return styles.uiuxCategory;
+    }
+
+    function formatDate(date) {
+      const d = new Date(date);
+      return d.toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      });
+    }
+
+    const [tasks, setTasks] = useState([
+      {
+        id: 1,
+        title: "Task",
+        date: "2026-07-07",
+        name: "User",
+        status: "Done",
+        priority: "High",
+        category: "Frontend"
+      }
+    ]);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [showPopup, setShowPopup] = useState(false);
 return (
 
     <div className={styles.container}>
@@ -54,7 +111,7 @@ return (
                 <div id={styles.utilities}>
                     <span><img src={search} alt="Search" style={{width: "25px"}}/>Search</span>
                     <span><img src={filter} alt="Filter" style={{width: "25px"}}/>Filter</span>
-                    <span id={styles.createNew}><img src={whitePlus} alt="New" style={{width: "25px"}}/>New</span>
+                    <span onClick={handleCreateTask} style={{cursor: "pointer"}}><img src={whitePlus} />New</span>
                 </div>
                 <div id={styles.updatesContent}>
                     {/*Table Header*/}
@@ -65,44 +122,128 @@ return (
                         <div><label><b>Status</b></label></div>
                         <div><label><b>Priority</b></label></div>
                         <div><label><b>Category</b></label></div>
-                   {/*Table Content
-                        Row 1
-                    */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
-                    {/* Row 2 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
-                    {/* Row 3 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusInProgress}><b>In Progress</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityHigh}><b>High</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.backendCategory}><img src={backend} alt="Backend" width={"20px"}/><b>Backend</b></div></div>
-                    {/* Row 4 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusToDo}><b>To Do</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityMedium}><b>Medium</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.frontendCategory}><img src={frontend} alt="Frontend" width={"20px"}/><b>Frontend</b></div></div>
-                    {/* Row 5 */}
-                        <div className={styles.firtColumn}><label><b>Teks</b></label></div>
-                        <div className={styles.updatesMainContent}><label>6/7/2026</label></div>
-                        <div className={styles.updatesMainContent}><img src={account} alt="Account" width={"25px"}/><label><b>Name</b></label></div>
-                        <div className={styles.updatesMainContent}><div className={styles.statusDone}><b>Done</b></div></div>
-                        <div className={styles.updatesMainContent}><div className={styles.priorityLow}><b>Low</b></div></div>
-                        <div className={styles.lastColumn}><div className={styles.UIUXCategory}><img src={UIUX} alt="UI/UX" width={"20px"}/><b>UI/UX</b></div></div>
-                </div>  
+                        {tasks.map((task) => (
+  <div
+    key={task.id}
+    onContextMenu={(e) => {
+      e.preventDefault();
+      setSelectedTask(task);
+      setShowPopup(true);
+    }}
+    style={{ display: "contents" }}
+  >
+    <div className={styles.firtColumn}>
+      <label><b>{task.title}</b></label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <label>{formatDate(task.date)}</label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <img src={account} width="25px" />
+      <label><b>{task.name}</b></label>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <div className={getStatusClass(task.status)}>
+        <b>{task.status}</b>
+      </div>
+    </div>
+
+    <div className={styles.updatesMainContent}>
+      <div className={getPriorityClass(task.priority)}>
+        <b>{task.priority}</b>
+      </div>
+    </div>
+
+    <div className={styles.lastColumn}>
+      <div className={getCategoryClass(task.category)}>
+        <img src={getCategoryIcon(task.category)} width="20px" />
+        <b>{task.category}</b>
+      </div>
+    </div>
+  </div>
+))}
+                </div>
+                {showPopup && selectedTask && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h3>Edit Task</h3>
+
+            <input
+              type="text"
+              value={selectedTask.title}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, title: e.target.value })
+              }
+            />
+
+            <input
+              type="date"
+              value={selectedTask.date}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, date: e.target.value })
+              }
+            />
+
+            <input
+              type="text"
+              value={selectedTask.name}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, name: e.target.value })
+              }
+            />
+
+            <select
+              value={selectedTask.status}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, status: e.target.value })
+              }
+            >
+              <option>To Do</option>
+              <option>Done</option>
+            </select>
+
+            <select
+              value={selectedTask.priority}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, priority: e.target.value })
+              }
+            >
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+
+            <select
+              value={selectedTask.category}
+              onChange={(e) =>
+                setSelectedTask({ ...selectedTask, category: e.target.value })
+              }
+            >
+              <option>Frontend</option>
+              <option>Backend</option>
+              <option>UI/UX</option>
+            </select>
+
+            <button
+              onClick={() => {
+                setTasks(
+                  tasks.map((t) =>
+                    t.id === selectedTask.id ? selectedTask : t
+                  )
+                );
+                setShowPopup(false);
+              }}
+            >
+              Save
+            </button>
+
+            <button onClick={() => setShowPopup(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
           </div>
         </div>   
     </div>
