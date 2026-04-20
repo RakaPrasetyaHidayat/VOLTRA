@@ -111,7 +111,7 @@ return (
                 <div id={styles.utilities}>
                     <span><img src={search} alt="Search" style={{width: "25px"}}/>Search</span>
                     <span><img src={filter} alt="Filter" style={{width: "25px"}}/>Filter</span>
-                    <span onClick={handleCreateTask} style={{cursor: "pointer"}}><img src={whitePlus} />New</span>
+                    <span onClick={handleCreateTask} style={{cursor: "pointer"}}><img src={whitePlus} alt="Create Task"/>New</span>
                 </div>
                 <div id={styles.updatesContent}>
                     {/*Table Header*/}
