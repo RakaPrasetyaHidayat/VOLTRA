@@ -159,7 +159,7 @@ return (
 
     <div className={styles.lastColumn}>
       <div className={getCategoryClass(task.category)}>
-        <img src={getCategoryIcon(task.category)} width="20px" />
+        <img src={getCategoryIcon(task.category)} width="20px" alt="Category Icon" />
         <b>{task.category}</b>
       </div>
     </div>
