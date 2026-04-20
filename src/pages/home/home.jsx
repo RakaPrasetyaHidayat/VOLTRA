@@ -141,7 +141,7 @@ return (
     </div>
 
     <div className={styles.updatesMainContent}>
-      <img src={account} width="25px" />
+      <img src={account} width="25px" alt="Account Icon"/>
       <label><b>{task.name}</b></label>
     </div>
 
