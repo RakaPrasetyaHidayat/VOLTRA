@@ -253,7 +253,6 @@ body {
 .popup input, .popup select, .popup button {
     outline: none;
     padding: 10px;
-    margin: 4px;
     border: none;
 }
 
@@ -271,6 +270,7 @@ body {
     cursor: pointer;
     font-weight: bold;
     width: 100%;
+    margin: 8px 0px;
 }
 
 #cancelButton {
@@ -280,4 +280,11 @@ body {
     cursor: pointer;
     width: 100%;
     font-weight: bold;
+    margin: 8px 0px;
+}
+
+.label {
+    font-size: 0.85rem;
+    color: #ffffff;
+    padding: 0px 8px;
 }

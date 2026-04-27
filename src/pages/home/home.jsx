@@ -170,7 +170,7 @@ return (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
             <h3>Edit Task</h3>
-
+            <label className={styles.label}>Task Title:</label>
             <input
               type="text"
               value={selectedTask.title}
@@ -178,7 +178,7 @@ return (
                 setSelectedTask({ ...selectedTask, title: e.target.value })
               }
             />
-
+            <label className={styles.label}>Deadline:</label>
             <input
               type="date"
               value={selectedTask.date}
@@ -187,6 +187,7 @@ return (
               }
             />
 
+            <label className={styles.label}>Assigned To:</label>
             <input
               type="text"
               value={selectedTask.name}
@@ -195,6 +196,7 @@ return (
               }
             />
 
+            <label className={styles.label}>Status:</label>
             <select
               value={selectedTask.status}
               onChange={(e) =>
@@ -205,6 +207,7 @@ return (
               <option>Done</option>
             </select>
 
+            <label className={styles.label}>Priority:</label>
             <select
               value={selectedTask.priority}
               onChange={(e) =>
@@ -216,6 +219,7 @@ return (
               <option>Low</option>
             </select>
 
+            <label className={styles.label}>Category:</label>
             <select
               value={selectedTask.category}
               onChange={(e) =>
@@ -226,7 +230,8 @@ return (
               <option>Backend</option>
               <option>UI/UX</option>
             </select>
-              <div class={styles.buttonContainer}>
+
+              <div className={styles.buttonContainer}>
                  <button
               onClick={() => {
                 setTasks(
