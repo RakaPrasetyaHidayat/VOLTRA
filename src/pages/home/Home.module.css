@@ -243,7 +243,7 @@ body {
   padding: 24px;
   border-radius: 10px;
   font-size: 24px;
-  min-width: 600px;
+  min-width: 400px;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -254,6 +254,30 @@ body {
     outline: none;
     padding: 10px;
     margin: 4px;
-    font-weight: bold;
     border: none;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#saveButton {
+    background-color: var(--blue);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+}
+
+#cancelButton {
+    background-color: #FF0000;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
 }

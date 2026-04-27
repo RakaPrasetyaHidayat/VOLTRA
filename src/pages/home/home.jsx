@@ -226,8 +226,8 @@ return (
               <option>Backend</option>
               <option>UI/UX</option>
             </select>
-
-            <button
+              <div class={styles.buttonContainer}>
+                 <button
               onClick={() => {
                 setTasks(
                   tasks.map((t) =>
@@ -236,11 +236,15 @@ return (
                 );
                 setShowPopup(false);
               }}
+              id={styles.saveButton}
             >
               Save
             </button>
 
-            <button onClick={() => setShowPopup(false)}>Cancel</button>
+            <button onClick={() => setShowPopup(false)} id={styles.cancelButton}>Cancel</button>
+
+              </div>
+           
           </div>
         </div>
       )}
