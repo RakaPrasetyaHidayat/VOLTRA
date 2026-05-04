@@ -22,133 +22,135 @@ body {
     font-family: figtree;
 }
 
-#mainContent {
+/* 🔥 FIX: id → class */
+.mainContent {
     display: grid;
     grid-template-rows: auto auto auto;
 }
 
-#project {
+.project {
     display: flex;
     flex-direction: column;
     padding: 20px;
     margin-top: 50px;
 }
-#projectHeader {
+
+.projectHeader {
     display: flex;
     flex-direction: column;
     margin-left: 20px;
     gap: 8px;
 }
-#projectContent {
+
+.projectContent {
     display: flex;
     flex-direction: row;
     padding: 20px;
     gap: 12px;
 }
 
-#card {
+.card {
     display: flex;
     flex-direction: column;
     width: 220px;
-    height: auto;
     border-radius: 16px;
     border: 1px solid var(--secondary-color);
 }
-#card span {
+
+.card span {
     display: flex;
     align-items: center;
-    width: auto;
     padding: 14px;
     gap: 8px;
 }
 
-#cardItems {
+.cardItems {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    width: auto;
     padding: 20px;
     border-radius: 16px;
     gap: 20px;
     border-top: 1px solid var(--secondary-color);
 }
 
-#cardItems p {
+.cardItems p {
     font-size: 16px;
 }
 
-#updates {
+.updates {
     display: flex;
     flex-direction: column;
     padding: 20px;
     gap: 12px;
 }
 
-#utilities {
+.utilities {
     display: flex;
-    flex-direction: row;
     justify-content: right;
     gap: 12px;
 }
 
-#utilities span {
+.utilities span {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-#updatesContent {
+.updatesContent {
     display: grid;
-    grid-template-columns: 400px auto auto auto auto auto;
-    row-gap: 2px;
-    grid-template-rows: auto auto auto auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
-#updatesContent div {
+.updatesContent div {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    padding: 6px;
-    padding-left: 12px;
+    padding: 6px 0 6px 12px;
     gap: 8px;
 }
 
+/* STATUS */
 .statusDone {
     background-color: var(--blue);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     width: 100%;
 }
 
-.statusToDo  {
+.statusToDo {
     background-color: var(--toDo);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     width: 100%;
 }
 
+.statusInProgress {
+    background-color: var(--progress);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    opacity: 0.5;
+    width: 100%;
+}
+
+/* PRIORITY */
 .priorityHigh {
     background-color: var(--high);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     width: 100%;
 }
 
-.statusInProgress, .priorityMedium{
+.priorityMedium {
     background-color: var(--progress);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     width: 100%;
@@ -158,17 +160,16 @@ body {
     background-color: var(--low);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     width: 100%;
 }
 
+/* TEAM */
 .frontendCategory {
     background-color: var(--frontend);
     border-radius: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
     opacity: 0.5;
     height: 30px;
@@ -195,18 +196,18 @@ body {
     width: 100%;
 }
 
+/* TABLE CELLS */
 .updatesMainContent {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 8px;
     background-color: var(--dark-blue);
     border: 1px solid var(--secondary-color);
 }
 
-.firtColumn {
+/* 🔥 FIX TYPO */
+.firstColumn {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 8px;
     border-top-left-radius: 12px;
@@ -217,7 +218,6 @@ body {
 
 .lastColumn {
     display: flex;
-    flex-direction: row;
     align-items: center;
     gap: 8px;
     border-top-right-radius: 12px;
@@ -226,65 +226,207 @@ body {
     border: 1px solid var(--secondary-color);
 }
 
+/* MODAL */
 .popupOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .popup {
-  background: var(--main-color);
-  padding: 24px;
-  border-radius: 10px;
-  font-size: 24px;
-  min-width: 400px;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    background: var(--main-color);
+    padding: 24px;
+    border-radius: 10px;
+    font-size: 24px;
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.popup input, .popup select, .popup button {
-    outline: none;
+.popup input,
+.popup select,
+.popup button {
     padding: 10px;
     border: none;
+    outline: none;
 }
 
 .buttonContainer {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     gap: 12px;
 }
 
-#saveButton {
+.saveButton {
     background-color: var(--blue);
     color: white;
     border-radius: 6px;
-    cursor: pointer;
     font-weight: bold;
     width: 100%;
-    margin: 8px 0px;
+    margin: 8px 0;
 }
 
-#cancelButton {
-    background-color: #FF0000;
+.cancelButton {
+    background-color: red;
     color: white;
     border-radius: 6px;
-    cursor: pointer;
     width: 100%;
     font-weight: bold;
-    margin: 8px 0px;
+    margin: 8px 0;
 }
 
 .label {
     font-size: 0.85rem;
-    color: #ffffff;
-    padding: 0px 8px;
+    padding: 0 8px;
+}
+
+.statusDone,
+.statusToDo,
+.statusInProgress,
+.priorityHigh,
+.priorityMedium,
+.priorityLow {
+    padding: 4px 10px;
+    width: fit-content;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+.formGroup label {
+  font-size: 13px;
+  color: #444;
+}
+
+.filterMenu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: var(--main-color);
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filterGroup select {
+  background: var(--secondary-color);
+  padding: 8px;
+}
+
+.filterGroup select:focus {
+  outline: none;
+}
+.filterGroup label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+}
+
+.filterMenu button {
+  background: var(--blue);
+  border: none;
+  padding: 5px;
+  border-radius: 4px;
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.searchPopup {
+  background: var(--main-color);
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  animation: slideDown 0.2s ease-out;
+}
+
+.searchBarWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--dark-blue);
+  padding: 8px 10px;
+  border-radius: inherit;
+}
+
+.searchInput {
+  border: none;
+  color: var(--secondary-color);
+  background: transparent;
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+}
+
+.historySection {
+  margin-top: 15px;
+  padding-top: 10px;
+  padding: 20px;
+}
+
+.historyTitle {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 200px; /* Menyesuaikan height ke bawah */
+  overflow-y: auto;
+}
+
+.historyItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.historyItem:hover {
+  background: #f8f9fa;
+}
+
+.clearHistory {
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 0;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

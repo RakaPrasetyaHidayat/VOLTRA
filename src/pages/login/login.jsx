@@ -45,6 +45,8 @@ function Login() {
 
       if (remember) {
         localStorage.setItem("token", data.data.token);
+        localStorage.setItem("token", newToken);
+        setToken(newToken);
         localStorage.setItem("userEmail", form.email);
       } else {
         sessionStorage.setItem("token", data.data.token);

@@ -105,3 +105,98 @@ nav {
 img {
     cursor: pointer;
 }
+
+/* Overlay untuk menutupi seluruh layar */
+.popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Hitam transparan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Kotak Popup */
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.formGroup input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.confirmButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Container untuk judul dan tombol X */
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee; /* Opsional: garis tipis di bawah header */
+    padding-bottom: 10px;
+}
+
+.popupHeader h3 {
+    margin: 0;
+}
+
+/* Tombol Exit (X) di pojok */
+.exitButton {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+    padding: 0 5px;
+}
+
+.exitButton:hover {
+    color: #ff4d4d; /* Berubah merah saat hover */
+}
+
+/* Pastikan popup memiliki padding yang pas */
+.popup {
+    background: var(--main-color);
+    padding: 20px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    min-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
