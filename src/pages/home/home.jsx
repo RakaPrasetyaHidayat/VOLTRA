@@ -1,9 +1,10 @@
 import styles from "./Home.module.css";
 import search from "../../assets/search.svg";
 import quicknotes from "../../assets/quick-notes.svg";
-import clock from "../../assets/clock.svg";
 import todoList from "../../assets/todo-list.svg";
 import filter from "../../assets/filter.svg";
+import clock from "../../assets/clock.svg";
+import SearchModal from "../../components/Search/Search"; // Pastikan path ini benar
 import whitePlus from "../../assets/white-plus.svg";
 import account from "../../assets/account.svg";
 import { useState, useEffect, useCallback } from "react";
@@ -188,48 +189,12 @@ function Home() {
               <img src={search} width="25" alt="" />Search
             </span>
 
-            {/* MODAL SEARCH POPUP */}
-            {showSearch && (
-              <div className={styles.popupOverlay} onClick={() => setShowSearch(false)}>
-                <div className={styles.searchPopup} onClick={(e) => e.stopPropagation()}>
-                  <div className={styles.searchBarWrapper}>
-                    <img src={search} width="20" alt="" />
-                    <input
-                      autoFocus
-                      className={styles.searchInput}
-                      placeholder="Cari judul task..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={handleSearchSubmit}
-                    />
-                  </div>
-                  
-                  {searchHistory.length > 0 && (
-                    <div className={styles.historySection}>
-                      <p className={styles.historyTitle}>Riwayat Pencarian</p>
-                      <div className={styles.historyList}>
-                        {searchHistory.map((item, index) => (
-                          <div 
-                            key={index} 
-                            className={styles.historyItem}
-                            onClick={() => { setSearchQuery(item); setShowSearch(false); }}
-                          >
-                            <img src={clock} width="14" alt="" />
-                            <span>{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <button 
-                        className={styles.clearHistory} 
-                        onClick={() => { setSearchHistory([]); localStorage.removeItem("searchHistory"); }}
-                      >
-                        Hapus Riwayat
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <SearchModal 
+              isOpen={showSearch} 
+              onClose={() => setShowSearch(false)} 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+            />
 
             {/* FILTER BUTTON & MENU */}
             <div style={{ position: 'relative' }}>

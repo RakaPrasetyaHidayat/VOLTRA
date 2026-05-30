@@ -12,7 +12,8 @@ import styles from "./Sidebar.module.css";
 import { useTab } from "../../components/Tab/TabContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react"; // Tambahkan useState
-
+import SearchModal from "../Search/Search"; // Pastikan path ini benar
+import CreateTeamModal from "../CreateTeam/CreateTeam.jsx";
 function Sidebar() {
     const { addTab } = useTab();
     const navigate = useNavigate();
@@ -25,6 +26,19 @@ function Sidebar() {
     const [showExitPopup, setShowExitPopup] = useState(false);
     const [exitTeamId, setExitTeamId] = useState("");
 
+    const [showSearch, setShowSearch] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchHistory, setSearchHistory] = useState(() => {
+        // Ambil riwayat dari localStorage saat pertama kali load
+        const saved = localStorage.getItem("searchHistory");
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    const [showCreateTeam, setShowCreateTeam] = useState(false);
+    const handleCreateTeamSubmit = (data) => {
+    console.log("Data Team Baru:", data);
+    // Jalankan fetch POST ke API Anda di sini dengan body: data
+    };
     // Fungsi Logika Exit Team
     const handleExitTeam = async () => {
         if (!exitTeamId) {
@@ -100,7 +114,14 @@ function Sidebar() {
                 <IconText />
                 <nav>
                     <ul>
-                        <li><img src={search} alt="Search" style={{ width: "25px"}} />Search</li>
+                        <li onClick={() => setShowSearch(true)}><img src={search} alt="Search" style={{ width: "25px"}} />Search</li>
+                            <SearchModal 
+                                isOpen={showSearch} 
+                                onClose={() => setShowSearch(false)} 
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                            />
+
                         <li onClick={() => openPage("Home", home, "/home")} className={`${styles.item} ${isActive("/home") ? styles.active : ""}`}><img src={home} alt="Home" style={{ width: "25px" }} />Home</li>
                          <li onClick={() => openPage("Notes", notes, "/note")} className={`${styles.item} ${isActive("/note") ? styles.active : ""}`}><img src={notes} alt="Notes" style={{ width: "25px" }} />Notes</li>
                         <li onClick={() => openPage("Task", task, "/task")} className={`${styles.item} ${isActive("/task") ? styles.active : ""}`}><img src={task} alt="Task" style={{ width: "25px" }} />Task</li>
@@ -110,16 +131,20 @@ function Sidebar() {
            
             <div id={styles.sidebarMain}>
                 <ul>
-                    <li>Private</li>
-                    <li><span><img src={plus} alt="Create Team" style={{ width: "25px" }} />Create New</span></li>
                     
-                    <li>Team</li>
+                    <li onClick={() => setShowCreateTeam(true)}><span><img src={plus} alt="Create Team" style={{ width: "25px" }} />Create New</span></li>
+                    <CreateTeamModal 
+                        isOpen={showCreateTeam}
+                        onClose={() => setShowCreateTeam(false)}
+                        onSubmit={handleCreateTeamSubmit}
+                    />
+
                     <li className={styles.teamActions}>
                         <span onClick={() => setShowJoinPopup(true)} className={styles.actionBtn}>
                             <img src={plus} alt="Join Team" style={{ width: "25px" }} />Join Team
                         </span>
                     </li>
-                    
+                    <li>Private Room</li>
                     <li>Team Room</li>
                 </ul>
             </div>
