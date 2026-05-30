@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import IconText from "../../components/Icon/Icon.jsx";
 import styles from "./Profile.module.css";
-
+import defaultAvatar from "../../assets/profil.jpg";
 function Profile() {
   const navigate = useNavigate();
 
@@ -87,21 +87,20 @@ function Profile() {
         <h2 id={styles.title}>Your Profile</h2>
         <div id={styles.box5}>
           <div id={styles.box2}>
-            <div id={styles.icon}>
+            <div id={styles.icon} onClick={() => {
+                  const newAvatar = prompt("Masukkan URL foto profil baru:", form.avatar);
+                  if (newAvatar !== null) setForm({ ...form, avatar: newAvatar });
+                }}>
               <i 
                 className="fa-solid fa-camera" 
                 id={styles.edit_icon}
-                onClick={() => {
-                  const newAvatar = prompt("Masukkan URL foto profil baru:", form.avatar);
-                  if (newAvatar !== null) setForm({ ...form, avatar: newAvatar });
-                }}
                 style={{ cursor: "pointer" }}
               ></i>
               <img 
                 id={styles.profile_icon} 
-                src={form.avatar || "/Mr_Raka.jpg"} 
+                src={form.avatar || defaultAvatar} 
                 alt="Profile" 
-                onError={(e) => { e.target.src = "/Mr_Raka.jpg"; }} 
+                onError={(e) => { e.target.src = defaultAvatar; }} 
               />
             </div>
 

@@ -40,21 +40,21 @@ function Login() {
 
     const data = await res.json();
 
-    if (res.ok) {
-      alert("Login berhasil!");
+   if (res.ok) {
+    alert("Login berhasil!");
 
-      if (remember) {
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("token", newToken);
-        setToken(newToken);
-        localStorage.setItem("userEmail", form.email);
-      } else {
-        sessionStorage.setItem("token", data.data.token);
-        sessionStorage.setItem("userEmail", form.email);
-      }
-
-      navigate("/home");
+    if (remember) {
+      // Simpan ke localStorage jika "Remember me" dicentang
+      localStorage.setItem("token", data.data.token);
+      localStorage.setItem("userEmail", form.email);
     } else {
+      // Simpan ke sessionStorage jika tidak dicentang
+      sessionStorage.setItem("token", data.data.token);
+      sessionStorage.setItem("userEmail", form.email);
+    }
+
+    navigate("/home");
+  } else {
       const msg = data.message?.toLowerCase();
 
       if (msg?.includes("invalid credential")) {
