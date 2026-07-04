@@ -42,7 +42,6 @@ function CreateTeamModal({
     };
   }, [isOpen, handleClose]);
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
