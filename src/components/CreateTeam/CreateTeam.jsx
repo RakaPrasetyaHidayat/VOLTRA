@@ -18,12 +18,14 @@ function CreateTeamModal({
     setDescription("");
   };
 
-   const handleClose = useCallback(() => {
+  // 1. Moved handleClose above useEffect and added onClose to the dependency array
+  const handleClose = useCallback(() => {
     resetForm();
     onClose();
-    }, []);
+  }, [onClose]);
 
-   useEffect(() => {
+  // 2. useEffect now safely references handleClose after its definition
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         handleClose();
