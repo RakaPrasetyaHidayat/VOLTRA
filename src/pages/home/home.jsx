@@ -82,9 +82,9 @@ function Home() {
     }
  }, [activeTeamId, getHeaders]);
 
- useEffect(() => {
-  fetchTasks();
-}, [activeTeamId, fetchTasks]);
+  useEffect(() => {
+    fetchTasks();
+  }, [activeTeamId, fetchTasks]);
 
   const filteredTasks = tasks.filter((task) => {
     const matchStatus =
