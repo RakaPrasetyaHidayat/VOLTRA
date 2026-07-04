@@ -1,4 +1,9 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTab } from "../../components/Tab/TabContext";
+
 import IconText from "../../components/Icon/Icon1.jsx";
+
 import plus from "../../assets/plus.svg";
 import setting from "../../assets/setting.svg";
 import icon from "../../assets/icon.svg";
@@ -7,191 +12,459 @@ import home from "../../assets/home.svg";
 import task from "../../assets/task.svg";
 import notes from "../../assets/notes.svg";
 import notif from "../../assets/notification.svg";
-import exit from "../../assets/exit.svg";
+
 import styles from "./Sidebar.module.css";
-import { useTab } from "../../components/Tab/TabContext";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react"; // Tambahkan useState
-import SearchModal from "../Search/Search"; // Pastikan path ini benar
-import CreateTeamModal from "../CreateTeam/CreateTeam.jsx";
+
+import SearchModal from "../Search/Search";
+import CreateTeamModal from "../CreateTeam/CreateTeam";
+
+import {
+  createTeam,
+  getServerTeams,
+} from "../../services/teamService";
+
+import {
+  createServer,
+} from "../../services/serverService";
+
 function Sidebar() {
-    const { addTab } = useTab();
-    const navigate = useNavigate();
-    const location = useLocation();
-    
-    // --- State Baru untuk Join Team ---
-    const [showJoinPopup, setShowJoinPopup] = useState(false);
-    const [teamIdInput, setTeamIdInput] = useState("");
-    // Tambahkan state untuk Exit Team
-    const [showExitPopup, setShowExitPopup] = useState(false);
-    const [exitTeamId, setExitTeamId] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { addTab } = useTab();
 
-    const [showSearch, setShowSearch] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchHistory, setSearchHistory] = useState(() => {
-        // Ambil riwayat dari localStorage saat pertama kali load
-        const saved = localStorage.getItem("searchHistory");
-        return saved ? JSON.parse(saved) : [];
-    });
+  const [privateTeams, setPrivateTeams] =
+    useState([]);
 
-    const [showCreateTeam, setShowCreateTeam] = useState(false);
-    const handleCreateTeamSubmit = (data) => {
-    console.log("Data Team Baru:", data);
-    // Jalankan fetch POST ke API Anda di sini dengan body: data
-    };
-    // Fungsi Logika Exit Team
-    const handleExitTeam = async () => {
-        if (!exitTeamId) {
-            alert("Harap masukkan ID Team yang ingin ditinggalkan!");
-            return;
-        }
+  const [publicTeams, setPublicTeams] =
+    useState([]);
 
-        try {
-            const token = localStorage.getItem("token");
-            // Menggunakan metode DELETE untuk exit/leave
-            const response = await fetch(`https://voltra-be.vercel.app/api/teams/${exitTeamId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+  const [activeTeam, setActiveTeam] =
+    useState(null);
 
-            if (response.ok) {
-                alert("Berhasil keluar dari tim!");
-                setShowExitPopup(false);
-                setExitTeamId("");
-            } else {
-                const errorData = await response.json();
-                alert(`Gagal: ${errorData.message || "Terjadi kesalahan"}`);
-            }
-        } catch (error) {
-            console.error("Exit Team Error:", error);
-            alert("Gagal menghubungi server.");
-        }
-    };
-    const isActive = (path) => location.pathname === path;
-    
-    const openPage = (name, icon, path) => {
-        addTab(name, icon);
-        navigate(path);
-    };
+  const [loadingTeams, setLoadingTeams] =
+    useState(false);
 
-    // --- Fungsi Logika Join Team ---
-    const handleJoinTeam = async () => {
-        if (!teamIdInput) {
-            alert("Harap masukkan ID Team!");
-            return;
-        }
+  const [creatingTeam, setCreatingTeam] =
+    useState(false);
 
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch("https://voltra-be.vercel.app/api/teams", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ teamId: teamIdInput }), // Sesuaikan key JSON dengan kebutuhan BE
-            });
+  const [showSearch, setShowSearch] =
+    useState(false);
 
-            if (response.ok) {
-                alert("Berhasil bergabung dengan tim!");
-                setShowJoinPopup(false);
-                setTeamIdInput("");
-            } else {
-                const errorData = await response.json();
-                alert(`Gagal: ${errorData.message || "Terjadi kesalahan"}`);
-            }
-        } catch (error) {
-            console.error("Join Team Error:", error);
-            alert("Gagal menghubungi server.");
-        }
-    };
+  const [showCreateTeam, setShowCreateTeam] =
+    useState(false);
 
-    return (
-        <div id={styles.sidebar}>
-            <div id={styles.sidebarTop}>
-                <IconText />
-                <nav>
-                    <ul>
-                        <li onClick={() => setShowSearch(true)}><img src={search} alt="Search" style={{ width: "25px"}} />Search</li>
-                            <SearchModal 
-                                isOpen={showSearch} 
-                                onClose={() => setShowSearch(false)} 
-                                searchQuery={searchQuery}
-                                setSearchQuery={setSearchQuery}
-                            />
+  const [searchQuery, setSearchQuery] =
+    useState("");
 
-                        <li onClick={() => openPage("Home", home, "/home")} className={`${styles.item} ${isActive("/home") ? styles.active : ""}`}><img src={home} alt="Home" style={{ width: "25px" }} />Home</li>
-                         <li onClick={() => openPage("Notes", notes, "/note")} className={`${styles.item} ${isActive("/note") ? styles.active : ""}`}><img src={notes} alt="Notes" style={{ width: "25px" }} />Notes</li>
-                        <li onClick={() => openPage("Task", task, "/task")} className={`${styles.item} ${isActive("/task") ? styles.active : ""}`}><img src={task} alt="Task" style={{ width: "25px" }} />Task</li>
-                    </ul>
-                </nav>
-            </div>
-           
-            <div id={styles.sidebarMain}>
-                <ul>
-                    
-                    <li onClick={() => setShowCreateTeam(true)}><span><img src={plus} alt="Create Team" style={{ width: "25px" }} />Create New</span></li>
-                    <CreateTeamModal 
-                        isOpen={showCreateTeam}
-                        onClose={() => setShowCreateTeam(false)}
-                        onSubmit={handleCreateTeamSubmit}
-                    />
+  const isActive = (path) =>
+    location.pathname === path;
 
-                    <li className={styles.teamActions}>
-                        <span onClick={() => setShowJoinPopup(true)} className={styles.actionBtn}>
-                            <img src={plus} alt="Join Team" style={{ width: "25px" }} />Join Team
-                        </span>
-                    </li>
-                    <li>Private Room</li>
-                    <li>Team Room</li>
-                </ul>
-            </div>
+  const openPage = (
+    title,
+    icon,
+    route
+  ) => {
+    addTab(title, icon);
+    navigate(route);
+  };
 
-            <div id={styles.sidebarBottom}>
-                <ul>
-                    <li onClick={() => openPage("Notification", notif, "/notification")} className={`${styles.item} ${isActive("/notification") ? styles.active : ""}`}><img src={notif} alt="Notification" style={{ width: "25px"}} />Notification</li>
-                    <li><img src={setting} alt="Setting" style={{ width: "25px"}} />Setting</li>
-                    <li onClick={() => navigate("/profile")}><img src={icon} alt="Profile" style={{ width: "35px"}} />Profile</li>
-                </ul>
-            </div>
+  const fetchTeams = async () => {
+  try {
+    setLoadingTeams(true);
 
-           {/* --- MODAL POPUP JOIN TEAM --- */}
-            {showJoinPopup && (
-                <div className={styles.popupOverlay} onClick={() => setShowJoinPopup(false)}>
-                    <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
-                        
-                        {/* Header dengan Tombol Exit */}
-                        <div className={styles.popupHeader}>
-                            <h3>Join a Team</h3>
-                            <button 
-                                className={styles.exitButton} 
-                                onClick={() => setShowJoinPopup(false)}
-                            >
-                            <img src={exit} alt="Exit" />
-                            </button>
-                        </div>
+    const serverId =
+      localStorage.getItem(
+        "activeServerId"
+      );
 
-                        <div className={styles.formGroup}>
-                            <label><b>Insert ID Team</b></label>
-                            <input 
-                                type="text" 
-                                placeholder="Example: 123" 
-                                value={teamIdInput}
-                                onChange={(e) => setTeamIdInput(e.target.value)}
-                            />
-                        </div>
-                        
-                        <div className={styles.buttonContainer}>
-                            <button className={styles.confirmButton} onClick={handleJoinTeam}>Confirm</button>
-                            <button className={styles.cancelButton} onClick={() => setShowJoinPopup(false)}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+    console.log(
+      "SERVER ID:",
+      serverId
     );
+
+    if (!serverId) {
+      setPrivateTeams([]);
+      setPublicTeams([]);
+      return;
+    }
+
+    const response =
+      await getServerTeams(serverId);
+
+    console.log(
+      "GET TEAMS RESPONSE:",
+      response
+    );
+
+    const teams =
+      Array.isArray(response)
+        ? response
+        : response?.data ||
+          response?.teams ||
+          [];
+
+    console.log(
+      "PARSED TEAMS:",
+      teams
+    );
+
+    const privateList =
+      teams.filter(
+        (team) =>
+          team.type ===
+          "Private"
+      );
+
+    const publicList =
+      teams.filter(
+        (team) =>
+          team.type ===
+          "Public"
+      );
+
+    setPrivateTeams(privateList);
+    setPublicTeams(publicList);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoadingTeams(false);
+  }
+};
+
+  useEffect(() => {
+    fetchTeams();
+  }, []);
+
+  const handleCreateServer =
+    async () => {
+      try {
+        const serverName =
+          prompt(
+            "Input Server Name"
+          );
+
+        if (!serverName) return;
+
+        const server =
+          await createServer({
+            name: serverName,
+          });
+
+        const serverId =
+          server?.id ||
+          server?.data?.id;
+
+        localStorage.setItem(
+          "activeServerId",
+          serverId
+        );
+
+        alert(
+          "Server created successfully"
+        );
+
+        fetchTeams();
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          error.message ||
+            "Failed create server"
+        );
+      }
+    };
+
+  const handleCreateTeamSubmit =
+    async (teamData) => {
+      try {
+        setCreatingTeam(true);
+
+        const serverId =
+          localStorage.getItem(
+            "activeServerId"
+          );
+
+        if (!serverId) {
+          alert(
+            "Create Server First"
+          );
+          return;
+        }
+
+        const result =
+          await createTeam({
+            serverId:
+              Number(serverId),
+
+            name: teamData.name,
+
+            type:
+              teamData.type,
+          });
+
+        const teamId =
+          result?.id ||
+          result?.data?.id;
+
+        localStorage.setItem(
+          "activeTeamId",
+          teamId
+        );
+
+        setShowCreateTeam(false);
+
+        await fetchTeams();
+
+        window.dispatchEvent(
+          new Event("teamChanged")
+        );
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          error.message ||
+            "Failed create team"
+        );
+      } finally {
+        setCreatingTeam(false);
+      }
+    };
+
+  const handleSelectTeam = (
+    team
+  ) => {
+    setActiveTeam(team);
+
+    localStorage.setItem(
+      "activeTeamId",
+      team.id
+    );
+
+    window.dispatchEvent(
+      new Event("teamChanged")
+    );
+  };
+
+  return (
+    <div id={styles.sidebar}>
+      {/* TOP */}
+
+      <div id={styles.sidebarTop}>
+        <IconText />
+
+        <nav>
+          <ul>
+            <li
+              onClick={() =>
+                setShowSearch(true)
+              }
+            >
+              <img
+                src={search}
+                alt=""
+                width="24"
+              />
+              Search
+            </li>
+
+            <li
+              onClick={() =>
+                openPage(
+                  "Home",
+                  home,
+                  "/home"
+                )
+              }
+              className={
+                isActive("/home")
+                  ? styles.active
+                  : ""
+              }
+            >
+              <img
+                src={home}
+                alt=""
+                width="24"
+              />
+              Home
+            </li>
+
+            <li
+              onClick={() =>
+                openPage(
+                  "Notes",
+                  notes,
+                  "/note"
+                )
+              }
+              className={
+                isActive("/note")
+                  ? styles.active
+                  : ""
+              }
+            >
+              <img
+                src={notes}
+                alt=""
+                width="24"
+              />
+              Notes
+            </li>
+
+            <li
+              onClick={() =>
+                openPage(
+                  "Task",
+                  task,
+                  "/task"
+                )
+              }
+              className={
+                isActive("/task")
+                  ? styles.active
+                  : ""
+              }
+            >
+              <img
+                src={task}
+                alt=""
+                width="24"
+              />
+              Task
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {/* MIDDLE */}
+              <div id={styles.sidebarMain}>
+        <ul>
+
+            <li onClick={handleCreateServer}>
+            <span>
+                <img src={plus} alt="" width="22" />
+                Create Server
+            </span>
+            </li>
+
+            <li onClick={() => setShowCreateTeam(true)}>
+            <span>
+                <img src={plus} alt="" width="22" />
+                Create Team
+            </span>
+            </li>
+
+            <div className={styles.sectionDivider}></div>
+
+            <li className={styles.sectionTitle}>
+            PRIVATE TEAMS
+            </li>
+
+            {privateTeams.map((team) => (
+            <li
+                key={team.id}
+                onClick={() => handleSelectTeam(team)}
+                className={
+                activeTeam?.id === team.id
+                    ? styles.active
+                    : ""
+                }
+            >
+                {team.name}
+            </li>
+            ))}
+
+            <div className={styles.sectionDivider}></div>
+
+            <li className={styles.sectionTitle}>
+            PUBLIC TEAMS
+            </li>
+
+            {publicTeams.map((team) => (
+            <li
+                key={team.id}
+                onClick={() => handleSelectTeam(team)}
+                className={
+                activeTeam?.id === team.id
+                    ? styles.active
+                    : ""
+                }
+            >
+                {team.name}
+            </li>
+            ))}
+
+        </ul>
+        </div>
+
+      {/* BOTTOM */}
+
+      <div id={styles.sidebarBottom}>
+        <ul>
+          <li
+            onClick={() =>
+              openPage(
+                "Notification",
+                notif,
+                "/notification"
+              )
+            }
+          >
+            <img
+              src={notif}
+              alt=""
+              width="24"
+            />
+            Notification
+          </li>
+
+          <li>
+            <img
+              src={setting}
+              alt=""
+              width="24"
+            />
+            Setting
+          </li>
+
+          <li
+            onClick={() =>
+              navigate("/profile")
+            }
+          >
+            <img
+              src={icon}
+              alt=""
+              width="35"
+            />
+            Profile
+          </li>
+        </ul>
+      </div>
+
+      <SearchModal
+        isOpen={showSearch}
+        onClose={() =>
+          setShowSearch(false)
+        }
+        searchQuery={searchQuery}
+        setSearchQuery={
+          setSearchQuery
+        }
+      />
+
+      <CreateTeamModal
+        isOpen={showCreateTeam}
+        onClose={() =>
+          setShowCreateTeam(false)
+        }
+        onSubmit={
+          handleCreateTeamSubmit
+        }
+        loading={creatingTeam}
+      />
+    </div>
+  );
 }
 
 export default Sidebar;

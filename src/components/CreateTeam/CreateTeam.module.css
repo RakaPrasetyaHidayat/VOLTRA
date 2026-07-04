@@ -112,3 +112,23 @@
 .submitButton:hover {
   background-color: #0051a8;
 }
+
+.exitButton {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inputField:focus,
+.textareaField:focus,
+.dropdownType:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}

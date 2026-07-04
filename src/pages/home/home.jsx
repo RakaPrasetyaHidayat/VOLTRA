@@ -1,24 +1,34 @@
 import styles from "./Home.module.css";
-import search from "../../assets/search.svg";
+
+import searchIcon from "../../assets/search.svg";
 import quicknotes from "../../assets/quick-notes.svg";
 import todoList from "../../assets/todo-list.svg";
-import filter from "../../assets/filter.svg";
+import filterIcon from "../../assets/filter.svg";
 import clock from "../../assets/clock.svg";
-import SearchModal from "../../components/Search/Search"; // Pastikan path ini benar
 import whitePlus from "../../assets/white-plus.svg";
 import account from "../../assets/account.svg";
-import { useState, useEffect, useCallback } from "react";
+
+import SearchModal from "../../components/Search/Search";
+
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import searchModal from "../../components/Search/Search.jsx";
+
+const API_URL = "https://voltra-be.vercel.app/api";
 
 function Home() {
-  const API = "https://voltra-be.vercel.app/api";
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const token = localStorage.getItem("token");
 
-  // 1. DEKLARASIKAN STATE TERLEBIH DAHULU
+  const activeTeamId = localStorage.getItem("activeTeamId");
+
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   const [showCreate, setShowCreate] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+
   const [filterCriteria, setFilterCriteria] = useState({
     status: "All",
     priority: "All",
@@ -26,380 +36,373 @@ function Home() {
 
   const [form, setForm] = useState({
     projectId: 1,
-    teamId: "",
+    teamId: activeTeamId || "",
     title: "",
     deadline: "",
     assignedUserId: "",
     status: "To Do",
     priority: "Low",
   });
-  // ... state yang sudah ada ...
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchHistory, setSearchHistory] = useState(() => {
-    // Ambil riwayat dari localStorage saat pertama kali load
-    const saved = localStorage.getItem("searchHistory");
-    return saved ? JSON.parse(saved) : [];
+
+  const getHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
   });
 
-  // Logika Filter yang diperbarui (Menambahkan pencarian berdasarkan judul)
-  const filteredTasks = tasks.filter((task) => {
-    const matchStatus =
-      filterCriteria.status === "All" || task.status === filterCriteria.status;
-    const matchPriority =
-      filterCriteria.priority === "All" ||
-      task.priority === filterCriteria.priority;
-    const matchSearch = task.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchStatus && matchPriority && matchSearch;
-  });
-
-  // Fungsi untuk menyimpan history
-  const handleSearchSubmit = (e) => {
-    if (e.key === "Enter" && searchQuery.trim() !== "") {
-      const newHistory = [
-        searchQuery,
-        ...searchHistory.filter((h) => h !== searchQuery),
-      ].slice(0, 5);
-      setSearchHistory(newHistory);
-      localStorage.setItem("searchHistory", JSON.stringify(newHistory));
-      setShowSearch(false); // Tutup popup setelah enter
-    }
-  };
-
-  const getHeaders = useCallback(
-    () => ({
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    }),
-    [token],
-  );
-
-  const getId = (obj) => obj?.id ?? obj?._id;
-
-  const safeFetch = async (url, options = {}) => {
-    try {
-      const res = await fetch(url, {
-        headers: getHeaders(),
-        ...options,
-      });
-      if (!res.ok) return null;
-      return await res.json();
-    } catch (err) {
-      console.error("URL:", url);
-      console.error("FETCH ERROR FULL:", err);
-      console.error("OPTIONS:", options);
-      return null;
-    }
-  };
-
-  const fetchTasks = useCallback(async () => {
-    const data = await safeFetch(`${API}/tasks`);
-    if (!data) return;
-    const normalized = (Array.isArray(data) ? data : []).map((t) => ({
-      ...t,
-      deadline: t.deadline || t.date || t.created_at || null,
-    }));
-    setTasks(normalized);
-  }, [API]);
-
-  useEffect(() => {
-    fetchTasks();
-  }, [fetchTasks]);
-
-  const handleSubmitCreate = async () => {
-    if (!form.title || !form.deadline) {
-      alert("Title dan Deadline wajib diisi!");
+  const fetchTasks = async () => {
+    if (!activeTeamId) {
+      setTasks([]);
       return;
     }
 
-    const payload = {
-      ...form,
-      projectId: Number(form.projectId) || 0,
-      teamId: Number(form.teamId) || 0,
-      assignedUserId: Number(form.assignedUserId) || 0,
-    };
+    try {
+      setLoading(true);
 
-    const data = await safeFetch(`${API}/tasks`, {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+      const response = await fetch(
+        `${API_URL}/task/team/${activeTeamId}`,
+        {
+          headers: getHeaders(),
+        }
+      );
 
-    if (data) {
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setTasks(data);
+      } else if (Array.isArray(data.data)) {
+        setTasks(data.data);
+      } else {
+        setTasks([]);
+      }
+    } catch (error) {
+      console.error(error);
+      setTasks([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, [activeTeamId]);
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchStatus =
+      filterCriteria.status === "All" ||
+      task.status === filterCriteria.status;
+
+    const matchPriority =
+      filterCriteria.priority === "All" ||
+      task.priority === filterCriteria.priority;
+
+    const matchSearch =
+      task.title
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+    return matchStatus && matchPriority && matchSearch;
+  });
+
+  const handleCreateTask = async () => {
+    if (!activeTeamId) {
+      alert("Buat atau pilih Team terlebih dahulu.");
+      return;
+    }
+
+    if (!form.title || !form.deadline) {
+      alert("Title dan deadline wajib diisi.");
+      return;
+    }
+
+    try {
+      const payload = {
+        ...form,
+        teamId: Number(activeTeamId),
+        projectId: Number(form.projectId),
+        assignedUserId: Number(form.assignedUserId) || 0,
+      };
+
+      const response = await fetch(`${API_URL}/task`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Create task failed");
+      }
+
       await fetchTasks();
+
       setShowCreate(false);
+
       setForm({
         projectId: 1,
-        teamId: "",
+        teamId: activeTeamId,
         title: "",
         deadline: "",
         assignedUserId: "",
         status: "To Do",
         priority: "Low",
       });
+    } catch (error) {
+      console.error(error);
+      alert("Gagal membuat task");
     }
   };
 
-  const handleUpdateStatus = async (task, newStatus) => {
-    const id = getId(task);
-    if (!id) return;
+  const handleStatusChange = async (task, newStatus) => {
+    try {
+      await fetch(`${API_URL}/task/${task.id}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({
+          ...task,
+          status: newStatus,
+        }),
+      });
 
-    await safeFetch(`${API}/tasks/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ status: newStatus }),
-    });
-
-    fetchTasks();
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleDelete = async (task) => {
-    const id = getId(task);
-    if (!id || !window.confirm("Hapus task?")) return;
-    await safeFetch(`${API({ method: "DELETE" })}/tasks/${id}`, {
-      method: "DELETE",
-    });
-    fetchTasks();
+  const handleDeleteTask = async (task) => {
+    const confirmDelete = window.confirm(
+      `Hapus task "${task.title}" ?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await fetch(`${API_URL}/task/${task.id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  function formatDate(date) {
-    if (!date) return "-";
-    const d = new Date(date);
-    return isNaN(d)
-      ? "-"
-      : d.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
-  }
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Done":
+        return styles.statusDone;
 
-  function getStatusClass(status) {
-    const s = String(status || "").toLowerCase();
-    if (s.includes("done")) return styles.statusDone;
-    if (s.includes("progress")) return styles.statusInProgress;
-    return styles.statusToDo;
-  }
+      case "In Progress":
+        return styles.statusInProgress;
 
-  function getPriorityClass(priority) {
-    const p = String(priority || "").toLowerCase();
-    if (p === "high") return styles.priorityHigh;
-    if (p === "medium") return styles.priorityMedium;
-    return styles.priorityLow;
-  }
+      default:
+        return styles.statusToDo;
+    }
+  };
+
+  const getPriorityClass = (priority) => {
+    switch (priority) {
+      case "High":
+        return styles.priorityHigh;
+
+      case "Medium":
+        return styles.priorityMedium;
+
+      default:
+        return styles.priorityLow;
+    }
+  };
 
   return (
     <motion.div
       className={styles.container}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
     >
       <div className={styles.mainContent}>
-        {/* TOP CARDS */}
+        {/* CARDS */}
+
         <div className={styles.project}>
           <div className={styles.projectHeader}>
             <h1>Your Project</h1>
-            <label>
-              <b>Here's your overview:</b>
-            </label>
+            <label>Here's your overview:</label>
           </div>
+
           <div className={styles.projectContent}>
-            <motion.div
-              className={styles.card}
-              whileHover={{ y: -6, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            >
+            <div className={styles.card}>
               <span>
-                <img src={todoList} width="25" alt="" /> <h3>To-Do List</h3>
+                <img src={todoList} width="25" />
+                <h3>To-Do List</h3>
               </span>
+
               <div className={styles.cardItems}>
                 <p>{tasks.length}</p>
                 <p>
                   <b>Tasks</b>
                 </p>
               </div>
-            </motion.div>
-            <motion.div
-              className={styles.card}
-              whileHover={{ y: -6, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            >
+            </div>
+
+            <div className={styles.card}>
               <span>
-                <img src={clock} width="25" alt="" /> <h3>Project Updates</h3>
+                <img src={clock} width="25" />
+                <h3>Project Updates</h3>
               </span>
+
               <div className={styles.cardItems}>
-                <p>-</p>
+                <p>
+                  {
+                    tasks.filter(
+                      (t) => t.status === "In Progress"
+                    ).length
+                  }
+                </p>
+
                 <p>
                   <b>Ongoing</b>
                 </p>
               </div>
-            </motion.div>
-            <motion.div
-              className={styles.card}
-              whileHover={{ y: -6, scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            >
+            </div>
+
+            <div className={styles.card}>
               <span>
-                <img src={quicknotes} width="25" alt="" /> <h3>Quick Notes</h3>
+                <img src={quicknotes} width="25" />
+                <h3>Quick Notes</h3>
               </span>
+
               <div className={styles.cardItems}>
                 <p>-</p>
                 <p>
                   <b>Notes</b>
                 </p>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
+        {/* ACTIONS */}
+
         <div className={styles.updates}>
           <div className={styles.utilities}>
-            {/* Tombol Search Trigger */}
-            <span
-              onClick={() => setShowSearch(true)}
-              style={{ cursor: "pointer" }}
-            >
-              <img src={search} width="25" alt="" />
+            <span onClick={() => setShowSearch(true)}>
+              <img src={searchIcon} width="25" />
               Search
             </span>
 
-            <SearchModal 
-                isOpen={showSearch} 
-                onClose={() => setShowSearch(false)} 
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-            />
+            <span onClick={() => setShowFilter(!showFilter)}>
+              <img src={filterIcon} width="25" />
+              Filter
+            </span>
 
-            {/* FILTER BUTTON & MENU */}
-            <div style={{ position: "relative" }}>
-              <span
-                onClick={() => setShowFilter(!showFilter)}
-                style={{ cursor: "pointer" }}
-              >
-                <img src={filter} width="25" alt="" />
-                Filter
-              </span>
-              {showFilter && (
-                <div className={styles.filterMenu}>
-                  <div className={styles.filterGroup}>
-                    <label>Status</label>
-                    <select
-                      value={filterCriteria.status}
-                      onChange={(e) =>
-                        setFilterCriteria({
-                          ...filterCriteria,
-                          status: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="All">All Status</option>
-                      <option value="To Do">To Do</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Done">Done</option>
-                    </select>
-                  </div>
-                  <div className={styles.filterGroup}>
-                    <label>Priority</label>
-                    <select
-                      value={filterCriteria.priority}
-                      onChange={(e) =>
-                        setFilterCriteria({
-                          ...filterCriteria,
-                          priority: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="All">All Priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                    </select>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setFilterCriteria({ status: "All", priority: "All" });
-                      setShowFilter(false);
-                    }}
-                  >
-                    Reset
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <span
-              onClick={() => setShowCreate(true)}
-              style={{ cursor: "pointer" }}
-            >
-              <img src={whitePlus} alt="" />
+            <span onClick={() => setShowCreate(true)}>
+              <img src={whitePlus} />
               New Task
             </span>
           </div>
 
-          {/* TABLE - MENGGUNAKAN filteredTasks */}
-          <div
-            className={styles.updatesContent}
-            style={{ gridTemplateColumns: "2fr 1.2fr 1fr 1fr 1.2fr 1fr" }}
-          >
-            <div>
-              <b>Title</b>
-            </div>
-            <div>
-              <b>Deadline</b>
-            </div>
-            <div>
-              <b>Team</b>
-            </div>
-            <div>
-              <b>People</b>
-            </div>
-            <div>
-              <b>Status</b>
-            </div>
-            <div>
-              <b>Priority</b>
-            </div>
+          <SearchModal
+            isOpen={showSearch}
+            onClose={() => setShowSearch(false)}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
 
-            {filteredTasks.map((task, index) => (
-              <motion.div
-                key={getId(task)}
-                style={{ display: "contents" }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                onDoubleClick={() => handleDelete(task)}
+          {/* FILTER */}
+
+          {showFilter && (
+            <div className={styles.filterMenu}>
+              <select
+                value={filterCriteria.status}
+                onChange={(e) =>
+                  setFilterCriteria({
+                    ...filterCriteria,
+                    status: e.target.value,
+                  })
+                }
               >
+                <option value="All">All Status</option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">
+                  In Progress
+                </option>
+                <option value="Done">Done</option>
+              </select>
+
+              <select
+                value={filterCriteria.priority}
+                onChange={(e) =>
+                  setFilterCriteria({
+                    ...filterCriteria,
+                    priority: e.target.value,
+                  })
+                }
+              >
+                <option value="All">All Priority</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+            </div>
+          )}
+
+          {/* TABLE */}
+
+          {loading ? (
+            <div className={styles.emptyState}>
+              <h3>Loading...</h3>
+            </div>
+          ) : filteredTasks.length === 0 ? (
+            <div className={styles.emptyState}>
+              <h3>No Tasks</h3>
+              <p>Create a Team then create your first task.</p>
+            </div>
+          ) : (
+            <div className={styles.updatesContent}>
+              {filteredTasks.map((task) => (
                 <div
-                  key={getId(task)}
+                  key={task.id}
                   style={{ display: "contents" }}
-                  onDoubleClick={() => handleDelete(task)}
+                  onDoubleClick={() =>
+                    handleDeleteTask(task)
+                  }
                 >
                   <div className={styles.firstColumn}>
-                    <b>{task.title}</b>
+                    {task.title}
                   </div>
+
                   <div className={styles.updatesMainContent}>
-                    {formatDate(task.deadline)}
+                    {task.deadline}
                   </div>
+
                   <div className={styles.updatesMainContent}>
-                    {task.teamId || "-"}
+                    {task.teamId}
                   </div>
+
                   <div className={styles.updatesMainContent}>
                     <img
                       src={account}
-                      width="14"
-                      alt=""
-                      style={{ marginRight: "4px" }}
+                      width="15"
                     />
-                    {task.assignedUserId || "-"}
+                    {task.assignedUserId}
                   </div>
+
                   <div className={styles.updatesMainContent}>
                     <select
-                      className={`${getStatusClass(task.status)} ${styles.labelSelect}`}
                       value={task.status}
-                      onChange={(e) => handleUpdateStatus(task, e.target.value)}
+                      className={`${getStatusClass(task.status)} ${styles.labelSelect}`}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          task,
+                          e.target.value
+                        )
+                      }
                     >
-                      <option value="To Do">To Do</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Done">Done</option>
+                      <option>To Do</option>
+                      <option>In Progress</option>
+                      <option>Done</option>
                     </select>
                   </div>
+
                   <div className={styles.updatesMainContent}>
                     <div
                       className={`${getPriorityClass(task.priority)} ${styles.label}`}
@@ -408,117 +411,88 @@ function Home() {
                     </div>
                   </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-          {/* POPUP CREATE TASK WITH LABELS */}
+        {/* CREATE TASK MODAL */}
+
+        <AnimatePresence>
           {showCreate && (
-            <motion.div className={styles.popupOverlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <motion.div className={styles.popup} style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '350px' }} initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
-                <h3>Create New Task</h3>
-                <div className={styles.formGroup}>
-                  <label>
-                    <b>Task Title *</b>
-                  </label>
-                  <input
-                    placeholder="Enter title"
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm({ ...form, title: e.target.value })
-                    }
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>
-                    <b>Deadline *</b>
-                  </label>
-                  <input
-                    type="date"
-                    value={form.deadline}
-                    onChange={(e) =>
-                      setForm({ ...form, deadline: e.target.value })
-                    }
-                  />
-                </div>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label>
-                      <b>Team ID</b>
-                    </label>
-                    <input
-                      placeholder="0"
-                      type="number"
-                      value={form.teamId}
-                      onChange={(e) =>
-                        setForm({ ...form, teamId: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label>
-                      <b>Assignee ID</b>
-                    </label>
-                    <input
-                      placeholder="0"
-                      type="number"
-                      value={form.assignedUserId}
-                      onChange={(e) =>
-                        setForm({ ...form, assignedUserId: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label>
-                      <b>Status</b>
-                    </label>
-                    <select
-                      value={form.status}
-                      onChange={(e) =>
-                        setForm({ ...form, status: e.target.value })
-                      }
-                    >
-                      <option value="To Do">To Do</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Done">Done</option>
-                    </select>
-                  </div>
-                  <div className={styles.formGroup} style={{ flex: 1 }}>
-                    <label>
-                      <b>Priority</b>
-                    </label>
-                    <select
-                      value={form.priority}
-                      onChange={(e) =>
-                        setForm({ ...form, priority: e.target.value })
-                      }
-                    >
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                    </select>
-                  </div>
-                </div>
+            <div className={styles.popupOverlay}>
+              <div className={styles.popup}>
+                <h3>Create Task</h3>
+
+                <input
+                  placeholder="Title"
+                  value={form.title}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      title: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  type="date"
+                  value={form.deadline}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      deadline: e.target.value,
+                    })
+                  }
+                />
+
+                <input
+                  placeholder="Assigned User ID"
+                  value={form.assignedUserId}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      assignedUserId:
+                        e.target.value,
+                    })
+                  }
+                />
+
+                <select
+                  value={form.priority}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      priority: e.target.value,
+                    })
+                  }
+                >
+                  <option>Low</option>
+                  <option>Medium</option>
+                  <option>High</option>
+                </select>
+
                 <div className={styles.buttonContainer}>
                   <button
                     className={styles.saveButton}
-                    onClick={handleSubmitCreate}
+                    onClick={handleCreateTask}
                   >
                     Create
                   </button>
+
                   <button
                     className={styles.cancelButton}
-                    onClick={() => setShowCreate(false)}
+                    onClick={() =>
+                      setShowCreate(false)
+                    }
                   >
                     Cancel
                   </button>
                 </div>
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
     </motion.div>
   );
