@@ -12,7 +12,18 @@ function CreateTeamModal({
   const [teamName, setTeamName] = useState("");
   const [description, setDescription] = useState("");
 
-  useEffect(() => {
+  const resetForm = () => {
+    setTeamType("Private");
+    setTeamName("");
+    setDescription("");
+  };
+
+   const handleClose = useCallback(() => {
+    resetForm();
+    onClose();
+    }, []);
+
+   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
         handleClose();
@@ -31,16 +42,6 @@ function CreateTeamModal({
     };
   }, [isOpen, handleClose]);
 
-  const resetForm = () => {
-    setTeamType("Private");
-    setTeamName("");
-    setDescription("");
-  };
-
-  const handleClose = useCallback(() => {
-    resetForm();
-    onClose();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
