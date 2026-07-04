@@ -41,7 +41,7 @@ function Sidebar() {
   const [activeTeam, setActiveTeam] =
     useState(null);
 
-  const [loadingTeams, setLoadingTeams] =
+  const [, setLoadingTeams] =
     useState(false);
 
   const [creatingTeam, setCreatingTeam] =

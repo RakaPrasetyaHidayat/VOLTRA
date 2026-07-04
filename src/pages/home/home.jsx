@@ -10,7 +10,7 @@ import account from "../../assets/account.svg";
 
 import SearchModal from "../../components/Search/Search";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = "https://voltra-be.vercel.app/api";
@@ -44,12 +44,12 @@ function Home() {
     priority: "Low",
   });
 
-  const getHeaders = () => ({
+  const getHeaders = useCallback(() => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
-  });
+  }), [token]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback( async () => {
     if (!activeTeamId) {
       setTasks([]);
       return;
@@ -80,11 +80,11 @@ function Home() {
     } finally {
       setLoading(false);
     }
-  };
+ }, [activeTeamId, getHeaders]);
 
-  useEffect(() => {
-    fetchTasks();
-  }, [activeTeamId]);
+ useEffect(() => {
+  fetchTasks();
+}, [activeTeamId, fetchTasks]);
 
   const filteredTasks = tasks.filter((task) => {
     const matchStatus =
@@ -231,7 +231,7 @@ function Home() {
           <div className={styles.projectContent}>
             <div className={styles.card}>
               <span>
-                <img src={todoList} width="25" />
+                <img src={todoList} width="25" alt="To-do List" />
                 <h3>To-Do List</h3>
               </span>
 
@@ -245,7 +245,7 @@ function Home() {
 
             <div className={styles.card}>
               <span>
-                <img src={clock} width="25" />
+                <img src={clock} width="25" alt="To-do List" />
                 <h3>Project Updates</h3>
               </span>
 
@@ -266,7 +266,7 @@ function Home() {
 
             <div className={styles.card}>
               <span>
-                <img src={quicknotes} width="25" />
+                <img src={quicknotes} width="25" alt="Quick Notes"  />
                 <h3>Quick Notes</h3>
               </span>
 
@@ -285,17 +285,17 @@ function Home() {
         <div className={styles.updates}>
           <div className={styles.utilities}>
             <span onClick={() => setShowSearch(true)}>
-              <img src={searchIcon} width="25" />
+              <img src={searchIcon} width="25" alt="Search"  />
               Search
             </span>
 
             <span onClick={() => setShowFilter(!showFilter)}>
-              <img src={filterIcon} width="25" />
+              <img src={filterIcon} width="25" alt="Filter"  />
               Filter
             </span>
 
             <span onClick={() => setShowCreate(true)}>
-              <img src={whitePlus} />
+              <img src={whitePlus}  alt="New Task" />
               New Task
             </span>
           </div>
@@ -382,6 +382,7 @@ function Home() {
                     <img
                       src={account}
                       width="15"
+                      alt="account" 
                     />
                     {task.assignedUserId}
                   </div>

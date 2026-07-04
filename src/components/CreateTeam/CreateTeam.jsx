@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styles from "./CreateTeam.module.css";
 import exitIcon from "../../assets/exit.svg";
 
@@ -37,10 +37,10 @@ function CreateTeamModal({
     setDescription("");
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     resetForm();
     onClose();
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
