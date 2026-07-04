@@ -29,7 +29,7 @@ function CreateTeamModal({
         handleKeyDown
       );
     };
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   const resetForm = () => {
     setTeamType("Private");
